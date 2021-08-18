@@ -1,0 +1,3 @@
+Source:
+https://stackoverflow.com/questions/58141153/how-do-i-isolate-handwritten-text-from-an-image-using-opencv-and-python
+https://stackoverflow.com/questions/23125359/crop-text-out-of-binary-image-opencv-c
