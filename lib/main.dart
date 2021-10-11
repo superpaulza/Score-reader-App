@@ -10,7 +10,6 @@ import 'package:flutter/material.dart';
 import 'package:score_scanner/pages/camera.dart';
 import 'package:score_scanner/pages/home.dart';
 import 'package:score_scanner/pages/second.dart';
-import 'package:score_scanner/pages/display.dart';
 
 Future<void> main() async {
   // Ensure that plugin services are initialized so that `availableCameras()`
@@ -23,6 +22,7 @@ Future<void> main() async {
   // Get a specific camera from the list of available cameras.
   final firstCamera = cameras.first;
 
+  
   runApp(MaterialApp(
       //Setting
       title: 'Score Scanner Mobile Application',
@@ -33,15 +33,6 @@ Future<void> main() async {
         '/': (BuildContext context) => new HomePage(),
         '/2': (BuildContext context) => new SecondPage(),
         '/cam': (BuildContext context) => new TakePictureScreen(camera: firstCamera),
-        '/dis': (BuildContext context) => new DisplayPictureScreen(imagePath: argument[])
       })
     );
-}
-
-
-class Arguments {
-  final String title_bar;
-  final String text_message;
- 
-  Arguments(this.title_bar, this.text_message);
 }
