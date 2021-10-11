@@ -32,21 +32,21 @@ class HomePage extends StatelessWidget {
               child: Text('Drawer Header'),
             ),
             ListTile(
-              title: const Text('Item 1'),
+              title: const Text('Take a picture'),
               onTap: () {
                 // Update the state of the app
                 // ...
                 // Then close the drawer
-                Navigator.pop(context);
+                Navigator.pushNamed(context, '/cam');
               },
             ),
             ListTile(
-              title: const Text('Item 2'),
+              title: const Text('Second'),
               onTap: () {
                 // Update the state of the app
                 // ...
                 // Then close the drawer
-                Navigator.pop(context);
+                Navigator.pushNamed(context, '/2');
               },
             ),
           ],
