@@ -45,6 +45,9 @@ class TakePictureScreenState extends State<TakePictureScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final deviceRatio = size.width / size.height;
+
     return Scaffold(
       appBar: AppBar(title: const Text('Take a picture')),
       // You must wait until the controller is initialized before displaying the
@@ -55,7 +58,18 @@ class TakePictureScreenState extends State<TakePictureScreen> {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             // If the Future is complete, display the preview.
-            return CameraPreview(_controller);
+            return Stack(
+            children: <Widget>[
+              Center(
+                child:Transform.scale(
+                      scale: _controller.value.aspectRatio/deviceRatio,
+                      child: AspectRatio(
+                       aspectRatio: _controller.value.aspectRatio,
+                       child: CameraPreview(_controller),
+                      )
+                )
+              )
+            ]);
           } else {
             // Otherwise, display a loading indicator.
             return const Center(child: CircularProgressIndicator());

@@ -49,6 +49,15 @@ class HomePage extends StatelessWidget {
                 Navigator.pushNamed(context, '/2');
               },
             ),
+            ListTile(
+              title: const Text('File Manager'),
+              onTap: () {
+                // Update the state of the app
+                // ...
+                // Then close the drawer
+                Navigator.pushNamed(context, '/file');
+              },
+            ),
           ],
         ),
       ),

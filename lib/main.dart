@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:score_scanner/pages/camera.dart';
 import 'package:score_scanner/pages/home.dart';
 import 'package:score_scanner/pages/second.dart';
+import 'package:score_scanner/pages/file.dart';
 
 Future<void> main() async {
   // Ensure that plugin services are initialized so that `availableCameras()`
@@ -33,6 +34,7 @@ Future<void> main() async {
         '/': (BuildContext context) => new HomePage(),
         '/2': (BuildContext context) => new SecondPage(),
         '/cam': (BuildContext context) => new TakePictureScreen(camera: firstCamera),
+        '/file': (BuildContext context) => new FilePickerDemo(),
       })
     );
 }
