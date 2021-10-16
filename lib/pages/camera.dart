@@ -3,6 +3,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 
 import 'package:score_scanner/pages/display.dart';
+import 'package:score_scanner/modules/drawer.dart';
 
 class TakePictureScreen extends StatefulWidget {
   const TakePictureScreen({
@@ -49,10 +50,14 @@ class TakePictureScreenState extends State<TakePictureScreen> {
     final deviceRatio = size.width / size.height;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Take a picture')),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
       // You must wait until the controller is initialized before displaying the
       // camera preview. Use a FutureBuilder to display a loading spinner until the
       // controller has finished initializing.
+      drawer: PublicDrawer(),
       body: FutureBuilder<void>(
         future: _initializeControllerFuture,
         builder: (context, snapshot) {
@@ -61,12 +66,12 @@ class TakePictureScreenState extends State<TakePictureScreen> {
             return Stack(
             children: <Widget>[
               Center(
-                child:Transform.scale(
-                      scale: _controller.value.aspectRatio/deviceRatio,
-                      child: AspectRatio(
-                       aspectRatio: _controller.value.aspectRatio,
-                       child: CameraPreview(_controller),
-                      )
+                child: Transform.scale(
+                        scale: _controller.value.aspectRatio/deviceRatio,
+                        child: AspectRatio(
+                          aspectRatio: _controller.value.aspectRatio,
+                          child: CameraPreview(_controller),
+                        )
                 )
               )
             ]);

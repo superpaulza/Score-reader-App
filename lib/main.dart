@@ -11,6 +11,7 @@ import 'package:score_scanner/pages/camera.dart';
 import 'package:score_scanner/pages/home.dart';
 import 'package:score_scanner/pages/second.dart';
 import 'package:score_scanner/pages/file.dart';
+import 'package:score_scanner/pages/filemanager.dart';
 
 Future<void> main() async {
   // Ensure that plugin services are initialized so that `availableCameras()`
@@ -29,12 +30,12 @@ Future<void> main() async {
       title: 'Score Scanner Mobile Application',
       theme: ThemeData.dark(),
       //Routing
-      initialRoute: '/',
+      initialRoute: '/cam',
       routes: {
         '/': (BuildContext context) => new HomePage(),
         '/2': (BuildContext context) => new SecondPage(),
         '/cam': (BuildContext context) => new TakePictureScreen(camera: firstCamera),
-        '/file': (BuildContext context) => new FilePickerDemo(),
+        '/file': (BuildContext context) => new fileManager(),
       })
     );
 }

@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 import 'package:score_scanner/modules/drawer.dart';
 
-class SecondPage extends StatelessWidget {
-  static String route = "second";
-
+class fileManager extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Second Route"),
-      ),
+      appBar: AppBar(),
       drawer: PublicDrawer(),
       body: Center(
         child: ElevatedButton(

@@ -2,6 +2,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'package:score_scanner/modules/drawer.dart';
+
 class FilePickerDemo extends StatefulWidget {
   @override
   _FilePickerDemoState createState() => _FilePickerDemoState();
@@ -145,6 +147,7 @@ class _FilePickerDemoState extends State<FilePickerDemo> {
         appBar: AppBar(
           title: const Text('File Picker'),
         ),
+        drawer: PublicDrawer(),
         body: Center(
           child: Padding(
             padding: const EdgeInsets.only(left: 10.0, right: 10.0),
