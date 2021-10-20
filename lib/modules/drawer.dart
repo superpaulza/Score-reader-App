@@ -19,12 +19,16 @@ class _PublicDrawerState extends State<PublicDrawer> {
         child: ListView(
           // Important: Remove any padding from the ListView.
           padding: EdgeInsets.zero,
-          children: [
+          children: <Widget>[
             const DrawerHeader(
               decoration: BoxDecoration(
                 color: Colors.blue,
+                image: DecorationImage(
+                  image: AssetImage("assets/img/icon.png"),
+                     fit: BoxFit.cover)
               ),
-              child: Text('Score Scanner Mobile Application'),
+              child: 
+                Text('Score Scanner Mobile Application'),
             ),
             ListTile(
               title: const Text('Home'),
