@@ -27,7 +27,31 @@ class _PublicDrawerState extends State<PublicDrawer> {
               child: Text('Score Scanner Mobile Application'),
             ),
             ListTile(
+              title: const Text('Home'),
+              leading: Icon(Icons.home),
+              onTap: () {
+                // Update the state of the app
+                // ...
+                // Then close the drawer
+                const newRouteName = "/cam";
+                bool isNewRouteSameAsCurrent = false;
+                Navigator.popUntil(context, (route) {
+                if (route.settings.name == newRouteName) {
+                  isNewRouteSameAsCurrent = true;
+                }
+                  return true;
+                });
+
+                if (!isNewRouteSameAsCurrent) {
+                  Navigator.pushReplacementNamed(context, newRouteName);
+                } else {
+                  Navigator.pop(context);
+                }
+              },
+            ),
+            ListTile(
               title: const Text('Scanner'),
+              leading: Icon(Icons.scanner),
               onTap: () {
                 // Update the state of the app
                 // ...
@@ -50,6 +74,7 @@ class _PublicDrawerState extends State<PublicDrawer> {
             ),
             ListTile(
               title: const Text('File Manager'),
+              leading: Icon(Icons.folder_open),
               onTap: () {
                 // Update the state of the app
                 // ...

@@ -8,9 +8,9 @@ import 'package:flutter/material.dart';
 
 //import routes
 import 'package:score_scanner/pages/camera.dart';
-import 'package:score_scanner/pages/home.dart';
-import 'package:score_scanner/pages/second.dart';
-import 'package:score_scanner/pages/file.dart';
+// import 'package:score_scanner/pages/home.dart';
+// import 'package:score_scanner/pages/second.dart';
+// import 'package:score_scanner/pages/file.dart';
 import 'package:score_scanner/pages/filemanager.dart';
 
 Future<void> main() async {
@@ -32,8 +32,8 @@ Future<void> main() async {
       //Routing
       initialRoute: '/cam',
       routes: {
-        '/': (BuildContext context) => new HomePage(),
-        '/2': (BuildContext context) => new SecondPage(),
+        // '/': (BuildContext context) => new HomePage(),
+        // '/2': (BuildContext context) => new SecondPage(),
         '/cam': (BuildContext context) => new TakePictureScreen(camera: firstCamera),
         '/file': (BuildContext context) => new fileManager(),
       })
