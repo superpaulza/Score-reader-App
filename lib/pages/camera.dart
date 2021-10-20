@@ -14,12 +14,13 @@ class TakePictureScreen extends StatefulWidget {
   final CameraDescription camera;
 
   @override
-  TakePictureScreenState createState() => TakePictureScreenState();
+  _TakePictureScreenState createState() => _TakePictureScreenState();
 }
 
-class TakePictureScreenState extends State<TakePictureScreen> {
+class _TakePictureScreenState extends State<TakePictureScreen> {
   late CameraController _controller;
   late Future<void> _initializeControllerFuture;
+  var scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -44,70 +45,128 @@ class TakePictureScreenState extends State<TakePictureScreen> {
     super.dispose();
   }
 
-  @override
-  Widget build(BuildContext context) {
+  Widget cameraPreview() {
     final size = MediaQuery.of(context).size;
     final deviceRatio = size.width / size.height;
-
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
       // You must wait until the controller is initialized before displaying the
       // camera preview. Use a FutureBuilder to display a loading spinner until the
       // controller has finished initializing.
-      drawer: PublicDrawer(),
-      body: FutureBuilder<void>(
+    return FutureBuilder<void>(
         future: _initializeControllerFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             // If the Future is complete, display the preview.
             return Stack(
-            children: <Widget>[
-              Center(
-                child: Transform.scale(
-                        scale: _controller.value.aspectRatio/deviceRatio,
-                        child: AspectRatio(
-                          aspectRatio: _controller.value.aspectRatio,
-                          child: CameraPreview(_controller),
-                        )
-                )
-              )
-            ]);
+              children: <Widget>[
+                Center(
+                  child:
+                    Transform.scale(
+                      scale: _controller.value.aspectRatio/deviceRatio,
+                      child: AspectRatio(
+                        aspectRatio: _controller.value.aspectRatio,
+                        child: CameraPreview(_controller),
+                      ),
+                    ),
+                ),
+              ],
+            );
           } else {
             // Otherwise, display a loading indicator.
             return const Center(child: CircularProgressIndicator());
           }
         },
-      ),
-      floatingActionButton: FloatingActionButton(
-        // Provide an onPressed callback.
-        onPressed: () async {
-          // Take the Picture in a try / catch block. If anything goes wrong,
-          // catch the error.
-          try {
-            // Ensure that the camera is initialized.
-            await _initializeControllerFuture;
+    );
+  }
 
-            // Attempt to take a picture and get the file `image`
-            // where it was saved.
-            final image = await _controller.takePicture();
+  Widget cameraControl() {
+    return Expanded(
+      child: Align(
+        alignment: Alignment.center,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisSize: MainAxisSize.max,
+          children: <Widget>[
+            FloatingActionButton(
+              child: Icon(
+                Icons.camera,
+                color: Colors.black,
+              ),
+              backgroundColor: Colors.white,
+              onPressed: () async {
+                    // Take the Picture in a try / catch block. If anything goes wrong,
+                    // catch the error.
+                    try {
+                    // Ensure that the camera is initialized.
+                    await _initializeControllerFuture;
 
-            // If the picture was taken, display it on a new screen.
-            await Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => DisplayPictureScreen(
-                  imagePath: image.path
-                )
-            ));
-          } catch (e) {
-            // If an error occurs, log the error to the console.
-            print(e);
-          }
-        },
-        child: const Icon(Icons.camera_alt),
+                    // Attempt to take a picture and get the file `image`
+                    // where it was saved.
+                    final image = await _controller.takePicture();
+
+                    // If the picture was taken, display it on a new screen.
+                    await Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => DisplayPictureScreen(
+                          imagePath: image.path
+                        )
+                    ));
+                    } catch (e) {
+                      // If an error occurs, log the error to the console.
+                      print(e);
+                    }
+                  },
+            )
+          ],
+        ),
       ),
+    );
+  }
+
+  Widget mainDrawer(){
+    return Positioned(
+                  left: 10,
+                  top: 20,
+                  child: IconButton(
+                    icon: Icon(Icons.menu),
+                    onPressed: () => scaffoldKey.currentState!.openDrawer(),
+                  ),
+                );
+  }
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      key: scaffoldKey,
+      drawer: PublicDrawer(),
+      body: Container(
+        child: Stack(
+          children: <Widget>[
+//            Expanded(
+//              flex: 1,
+//              child: _cameraPreviewWidget(),
+//            ),
+            Align(
+              alignment: Alignment.center,
+              child: cameraPreview(),
+            ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                height: 120,
+                width: double.infinity,
+                padding: EdgeInsets.all(15),
+                color: Colors.transparent,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    cameraControl(),
+                  ],
+                ),
+              ),
+            ),
+          mainDrawer(),
+          ],
+        ),
+      ),   
     );
   }
 }

@@ -25,7 +25,8 @@ class _PublicDrawerState extends State<PublicDrawer> {
                 color: Colors.blue,
                 image: DecorationImage(
                   image: AssetImage("assets/img/icon.png"),
-                     fit: BoxFit.cover)
+                     fit: BoxFit.cover
+                )
               ),
               child: 
                 Text('Score Scanner Mobile Application'),
