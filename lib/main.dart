@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 
 //import routes
 import 'package:score_scanner/pages/camera.dart';
+import 'package:score_scanner/pages/debug.dart';
 // import 'package:score_scanner/pages/home.dart';
 // import 'package:score_scanner/pages/second.dart';
 // import 'package:score_scanner/pages/file.dart';
@@ -24,7 +25,6 @@ Future<void> main() async {
   // Get a specific camera from the list of available cameras.
   final firstCamera = cameras.first;
 
-  
   runApp(MaterialApp(
       //Setting
       title: 'Score Scanner Mobile Application',
@@ -36,6 +36,7 @@ Future<void> main() async {
         // '/2': (BuildContext context) => new SecondPage(),
         '/cam': (BuildContext context) => new TakePictureScreen(camera: firstCamera),
         '/file': (BuildContext context) => new fileManager(),
+        '/debug': (BuildContext context) => new deBugScreen(),
       })
     );
 }

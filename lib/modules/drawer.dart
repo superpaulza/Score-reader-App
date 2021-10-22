@@ -100,6 +100,49 @@ class _PublicDrawerState extends State<PublicDrawer> {
                 }
               },
             ),
+            ListTile(
+              title: const Text('Settings'),
+              leading: Icon(Icons.settings),
+              onTap: () {
+                Navigator.pop(context);
+          final snackBar = SnackBar(
+            content: const Text('Unavailable! For premium uses only'),
+            action: SnackBarAction(
+              label: 'OK',
+              onPressed: () {
+                // Some code to undo the change.
+              },
+            ),
+          );
+
+          // Find the ScaffoldMessenger in the widget tree
+          // and use it to show a SnackBar.
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+              },
+            ),
+            ListTile(
+              title: const Text('Debug'),
+              leading: Icon(Icons.bug_report),
+              onTap: () {
+                // Update the state of the app
+                // ...
+                // Then close the drawer
+                const newRouteName = "/debug";
+                bool isNewRouteSameAsCurrent = false;
+                Navigator.popUntil(context, (route) {
+                if (route.settings.name == newRouteName) {
+                  isNewRouteSameAsCurrent = true;
+                }
+                  return true;
+                });
+
+                if (!isNewRouteSameAsCurrent) {
+                  Navigator.pushNamed(context, newRouteName);
+                } else {
+                  Navigator.pop(context);
+                }
+              },
+            ),
           ],
         ),
     );

@@ -1,4 +1,4 @@
-package com.example.score_scanner
+package com.nbc.score_scanner
 
 import io.flutter.embedding.android.FlutterActivity
 

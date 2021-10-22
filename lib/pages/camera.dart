@@ -31,7 +31,7 @@ class _TakePictureScreenState extends State<TakePictureScreen> {
       // Get a specific camera from the list of available cameras.
       widget.camera,
       // Define the resolution to use.
-      ResolutionPreset.medium,
+      ResolutionPreset.max,
     );
 
     // Next, initialize the controller. This returns a Future.
@@ -46,8 +46,8 @@ class _TakePictureScreenState extends State<TakePictureScreen> {
   }
 
   Widget cameraPreview() {
-    final size = MediaQuery.of(context).size;
-    final deviceRatio = size.width / size.height;
+      final size = MediaQuery.of(context).size;
+      final deviceRatio = size.width / size.height;
       // You must wait until the controller is initialized before displaying the
       // camera preview. Use a FutureBuilder to display a loading spinner until the
       // controller has finished initializing.
@@ -56,20 +56,13 @@ class _TakePictureScreenState extends State<TakePictureScreen> {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             // If the Future is complete, display the preview.
-            return Stack(
-              children: <Widget>[
-                Center(
-                  child:
-                    Transform.scale(
+            return Transform.scale(
                       scale: _controller.value.aspectRatio/deviceRatio,
                       child: AspectRatio(
-                        aspectRatio: _controller.value.aspectRatio,
-                        child: CameraPreview(_controller),
-                      ),
-                    ),
-                ),
-              ],
-            );
+                       aspectRatio: _controller.value.aspectRatio,
+                       child: CameraPreview(_controller),
+                       ),
+                   );
           } else {
             // Otherwise, display a loading indicator.
             return const Center(child: CircularProgressIndicator());
@@ -140,10 +133,6 @@ class _TakePictureScreenState extends State<TakePictureScreen> {
       body: Container(
         child: Stack(
           children: <Widget>[
-//            Expanded(
-//              flex: 1,
-//              child: _cameraPreviewWidget(),
-//            ),
             Align(
               alignment: Alignment.center,
               child: cameraPreview(),
@@ -168,5 +157,18 @@ class _TakePictureScreenState extends State<TakePictureScreen> {
         ),
       ),   
     );
+  }
+}
+
+class _MediaSizeClipper extends CustomClipper<Rect> {
+  final Size mediaSize;
+  const _MediaSizeClipper(this.mediaSize);
+  @override
+  Rect getClip(Size size) {
+    return Rect.fromLTWH(0, 0, mediaSize.width, mediaSize.height);
+  }
+  @override
+  bool shouldReclip(CustomClipper<Rect> oldClipper) {
+    return true;
   }
 }
