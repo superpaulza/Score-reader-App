@@ -13,36 +13,70 @@ class deBugScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text('Developer Mode')),
       drawer: PublicDrawer(),
-      body: Center(
-        child:
+      body:
+        Column(
+        children: <Widget>[
+          Center(
+          child:
             ElevatedButton(
               onPressed: () {generateCSVFile();}, 
               child: Text(
                 'Generate CSV', 
                 style: TextStyle(fontSize: 22)
               ),
-              style: ElevatedButton.styleFrom(
-                primary: Colors.pinkAccent,
-                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-              )
             )
-        )
+          ),
+          Center(
+          child:
+            ElevatedButton(
+              onPressed: () {deletallCSVFile();}, 
+              child: Text(
+                'Delete all Files', 
+                style: TextStyle(fontSize: 22)
+              ),
+            )
+          ),
+          Center(
+          child:
+            ElevatedButton(
+              onPressed: () {log('eiei');}, 
+              child: Text(
+                'Log to console', 
+                style: TextStyle(fontSize: 22)
+              ),
+            )
+          ),
+        ],
+      )
     );
   }
 }
 
   //Test Generate CSV Files
 generateCSVFile() async {
-List<List<String>> data = [
-  ['No', 'Score'],
-  ['1','0'],
-  ['2','20.99'],
-  ['99','-9999']
-];
-String csvData = ListToCsvConverter().convert(data);
-String directory = (await getApplicationSupportDirectory()).path;
-String filePath = '$directory/csv-${DateTime.now()}.csv';
-File file = File(filePath);
-await file.writeAsString(csvData);
-log("File created! locate in $directory/csv-${DateTime.now()}.csv");
+  List<List<String>> data = [
+    ['No', 'Score'],
+    ['1','0'],
+    ['2','20.99'],
+    ['99','-9999']
+  ];
+  String csvData = ListToCsvConverter().convert(data);
+  String directory = (await getApplicationSupportDirectory()).path;
+  String filePath = '$directory/csv-${DateTime.now()}.csv';
+  File file = File(filePath);
+  await file.writeAsString(csvData);
+  log("File created! locate in $directory/csv-${DateTime.now()}.csv");
+}
+
+deletallCSVFile() async {
+  String directory = (await getApplicationSupportDirectory()).path;
+  final targetFile = Directory(directory);
+  try {
+    if(targetFile.existsSync()) {
+      targetFile.deleteSync(recursive: true);
+    }
+    } catch (e) {
+      return 0;
+    }
+  log("File deleted!");
 }

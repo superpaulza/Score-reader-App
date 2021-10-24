@@ -36,6 +36,7 @@ class _TakePictureScreenState extends State<TakePictureScreen> {
 
     // Next, initialize the controller. This returns a Future.
     _initializeControllerFuture = _controller.initialize();
+
   }
 
   @override
@@ -45,9 +46,17 @@ class _TakePictureScreenState extends State<TakePictureScreen> {
     super.dispose();
   }
 
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _controller != null
+          ? _initializeControllerFuture = _controller.initialize()
+          : null; //on pause camera disposed so we need call again "issue is only for android"
+  
+    }
+  }
+
   Widget cameraPreview() {
-      final size = MediaQuery.of(context).size;
-      final deviceRatio = size.width / size.height;
       // You must wait until the controller is initialized before displaying the
       // camera preview. Use a FutureBuilder to display a loading spinner until the
       // controller has finished initializing.
@@ -56,13 +65,7 @@ class _TakePictureScreenState extends State<TakePictureScreen> {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             // If the Future is complete, display the preview.
-            return Transform.scale(
-                      scale: _controller.value.aspectRatio/deviceRatio,
-                      child: AspectRatio(
-                       aspectRatio: _controller.value.aspectRatio,
-                       child: CameraPreview(_controller),
-                       ),
-                   );
+            return CameraPreview(_controller);
           } else {
             // Otherwise, display a loading indicator.
             return const Center(child: CircularProgressIndicator());

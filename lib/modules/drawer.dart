@@ -48,7 +48,8 @@ class _PublicDrawerState extends State<PublicDrawer> {
                 });
 
                 if (!isNewRouteSameAsCurrent) {
-                  Navigator.pushReplacementNamed(context, newRouteName);
+                  Navigator.pop(context);
+                  Navigator.of(context).pushNamed(newRouteName);
                 } else {
                   Navigator.pop(context);
                 }
@@ -71,7 +72,8 @@ class _PublicDrawerState extends State<PublicDrawer> {
                 });
 
                 if (!isNewRouteSameAsCurrent) {
-                  Navigator.pushNamed(context, newRouteName);
+                  Navigator.pop(context);
+                  Navigator.of(context).pushNamed(newRouteName);
                 } else {
                   Navigator.pop(context);
                 }
@@ -94,7 +96,8 @@ class _PublicDrawerState extends State<PublicDrawer> {
                 });
 
                 if (!isNewRouteSameAsCurrent) {
-                  Navigator.pushNamed(context, newRouteName);
+                  Navigator.pop(context);
+                  Navigator.of(context).pushNamed(newRouteName);
                 } else {
                   Navigator.pop(context);
                 }
@@ -137,7 +140,8 @@ class _PublicDrawerState extends State<PublicDrawer> {
                 });
 
                 if (!isNewRouteSameAsCurrent) {
-                  Navigator.pushNamed(context, newRouteName);
+                  Navigator.pop(context);
+                  Navigator.of(context).pushNamed(newRouteName);
                 } else {
                   Navigator.pop(context);
                 }
