@@ -7,12 +7,12 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 
 //import routes
-import 'package:score_scanner/pages/camera.dart';
-import 'package:score_scanner/pages/debug.dart';
+import 'package:score_scanner/pages/camera/camera.dart';
+import 'package:score_scanner/debug/debug.dart';
 // import 'package:score_scanner/pages/home.dart';
 // import 'package:score_scanner/pages/second.dart';
 // import 'package:score_scanner/pages/file.dart';
-import 'package:score_scanner/pages/filemanager.dart';
+import 'package:score_scanner/pages/filemanager/filemanager.dart';
 
 Future<void> main() async {
   // Ensure that plugin services are initialized so that `availableCameras()`
