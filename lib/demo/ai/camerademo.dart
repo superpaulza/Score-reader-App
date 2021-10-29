@@ -1,13 +1,16 @@
 // A screen that allows users to take a picture using a given camera.
+import 'dart:developer';
+import 'dart:io';
+
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:score_scanner/demo/ai/aitest.dart';
 
-import 'package:score_scanner/pages/camera/display.dart';
 import 'package:score_scanner/modules/drawer.dart';
 
-class TakePictureScreen extends StatefulWidget {
-  const TakePictureScreen({
+class TakePictureScreenDebug extends StatefulWidget {
+  const TakePictureScreenDebug({
     Key? key,
     required this.camera,
   }) : super(key: key);
@@ -15,10 +18,10 @@ class TakePictureScreen extends StatefulWidget {
   final CameraDescription camera;
 
   @override
-  _TakePictureScreenState createState() => _TakePictureScreenState();
+  _TakePictureScreenDebugState createState() => _TakePictureScreenDebugState();
 }
 
-class _TakePictureScreenState extends State<TakePictureScreen> {
+class _TakePictureScreenDebugState extends State<TakePictureScreenDebug> {
   late CameraController _controller;
   late Future<void> _initializeControllerFuture;
   var scaffoldKey = GlobalKey<ScaffoldState>();
@@ -113,10 +116,11 @@ class _TakePictureScreenState extends State<TakePictureScreen> {
                     final image = await _controller.takePicture();
 
                     // If the picture was taken, display it on a new screen.
+                    log(image.path.toString());
                     await Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) => DisplayPictureScreen(
-                          imageData: image
+                        builder: (context) => aiTestScreen(
+                          imageData: File(image.path)
                         )
                     ));
                     } catch (e) {

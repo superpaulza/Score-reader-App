@@ -6,13 +6,15 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 
+
 //import routes
-import 'package:score_scanner/pages/camera/camera.dart';
 import 'package:score_scanner/debug/debug.dart';
-// import 'package:score_scanner/pages/home.dart';
-// import 'package:score_scanner/pages/second.dart';
-// import 'package:score_scanner/pages/file.dart';
+import 'package:score_scanner/demo/ai/camerademo.dart';
+import 'package:score_scanner/demo/homedemo.dart';
+import 'package:score_scanner/demo/second.dart';
+import 'package:score_scanner/demo/file.dart';
 import 'package:score_scanner/pages/filemanager/filemanager.dart';
+import 'package:score_scanner/pages/camera/camera.dart';
 
 Future<void> main() async {
   // Ensure that plugin services are initialized so that `availableCameras()`
@@ -36,7 +38,7 @@ Future<void> main() async {
         // '/2': (BuildContext context) => new SecondPage(),
         '/cam': (BuildContext context) => new TakePictureScreen(camera: firstCamera),
         '/file': (BuildContext context) => new fileManager(),
-        '/debug': (BuildContext context) => new deBugScreen(),
+        '/debug': (BuildContext context) => new deBugScreen(debugCamera: firstCamera),
       })
     );
 }

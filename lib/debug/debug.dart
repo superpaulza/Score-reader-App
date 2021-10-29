@@ -1,14 +1,32 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:camera/camera.dart';
 import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:score_scanner/demo/ai/camerademo.dart';
+import 'package:score_scanner/demo/ai/filepicker.dart';
 import 'package:score_scanner/demo/handwrite_ai/recognizer_screen.dart';
 
 import 'package:score_scanner/modules/drawer.dart';
 
-class deBugScreen extends StatelessWidget {
+class deBugScreen extends StatefulWidget {
+  final CameraDescription debugCamera;
+
+  deBugScreen({Key? key, required this.debugCamera}) : super(key: key);
+
+  @override
+  _deBugScreenState createState() => _deBugScreenState();
+}
+
+class _deBugScreenState extends State<deBugScreen> {
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
     @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,6 +68,40 @@ class deBugScreen extends StatelessWidget {
               }, 
               child: Text(
                 'Model Example', 
+                style: TextStyle(fontSize: 22)
+              ),
+            )
+          ),
+          Center(
+          child:
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) =>
+                    filePickerScreen()
+                  ),
+                );
+              }, 
+              child: Text(
+                'Test Model with image', 
+                style: TextStyle(fontSize: 22)
+              ),
+            )
+          ),
+          Center(
+          child:
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) =>
+                    TakePictureScreenDebug(camera: widget.debugCamera)
+                  ),
+                );
+              }, 
+              child: Text(
+                'Test Model with camera', 
                 style: TextStyle(fontSize: 22)
               ),
             )

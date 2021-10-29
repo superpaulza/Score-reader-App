@@ -15,8 +15,8 @@ class AppBrain {
     Tflite.close();
     try {
       await Tflite.loadModel(
-        model: "assets/models/model_eff.tflite",
         // model: "assets/models/model_eff.tflite",
+        model: "assets/models/converted_mnist_model.tflite",
         labels: "assets/models/labels.txt",
       );
     } on PlatformException {
@@ -24,13 +24,17 @@ class AppBrain {
     }
   }
 
-  Future<List?> predictImage(XFile imageData) async {
-    final bytes = await File(imageData.path).readAsBytes();
-    final im.Image? image = im.decodeImage(bytes);
-    return await Tflite.runModelOnBinary(
-      binary: imageToByteListFloat32(image!, image.width, image.height),
-    );
+  Future<List?> predictImage(File imageData) async {
+    return await Tflite.runModelOnImage(path: imageData.path);
   }
+
+  // Future<List?> predictImage(File imageData) async {
+  //   final bytes = await imageData.readAsBytes();
+  //   final im.Image? image = im.decodeImage(bytes);
+  //   return await Tflite.runModelOnBinary(
+  //     binary: imageToByteListFloat32(image!, image.width, image.height),
+  //   );
+  // }
 
   Uint8List imageToByteListFloat32(im.Image image, int widgth, int height) {
     var convertedBytes = Float32List(widgth * height);
