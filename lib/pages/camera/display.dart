@@ -3,6 +3,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:score_scanner/modules/drawer.dart';
 
+import 'package:score_scanner/modules/recognizer/brain.dart';
+import 'package:image/image.dart' as im;
+
 // A widget that displays the picture taken by the user.
 class DisplayPictureScreen extends StatelessWidget {
   final String imagePath;

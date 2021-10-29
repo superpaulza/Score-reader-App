@@ -1,4 +1,6 @@
 
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:typed_data';
@@ -14,7 +16,8 @@ class AppBrain {
     Tflite.close();
     try {
       await Tflite.loadModel(
-        model: "assets/models/converted_mnist_model.tflite",
+        // model: "assets/models/converted_mnist_model.tflite",
+        model: "assets/models/model_eff.tflite",
         labels: "assets/models/labels.txt",
       );
     } on PlatformException {
@@ -75,10 +78,13 @@ class AppBrain {
     return predictImage(resizedImage);
   }
 
+  //
   Future<List?> predictImage(im.Image image) async {
-    return await Tflite.runModelOnBinary(
+    List? test = await Tflite.runModelOnBinary(
       binary: imageToByteListFloat32(image, kModelInputSize),
     );
+    log(test.toString());
+    return test; 
   }
 
   Uint8List imageToByteListFloat32(im.Image image, int inputSize) {

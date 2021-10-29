@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-const int kModelInputSize = 28;
+const int kModelInputSize = 8;
 const double kCanvasInnerOffset = 40.0;
 const double kCanvasSize = 200.0;
 const double kStrokeWidth = 12.0;

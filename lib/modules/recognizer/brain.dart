@@ -7,14 +7,14 @@ import 'package:image/image.dart' as im;
 import 'package:tflite/tflite.dart';
 
 class AppBrain {
-  int inputSize = 30;
+  int inputSize = 320;
 
   //load models
   Future loadModel() async {
     Tflite.close();
     try {
       await Tflite.loadModel(
-        model: "assets/models/converted_mnist_model.tflite",
+        model: "assets/models/model_eff.tflite",
         labels: "assets/models/labels.txt",
       );
     } on PlatformException {
