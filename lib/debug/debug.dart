@@ -12,9 +12,8 @@ import 'package:score_scanner/demo/handwrite_ai/recognizer_screen.dart';
 import 'package:score_scanner/modules/drawer.dart';
 
 class deBugScreen extends StatefulWidget {
-  final CameraDescription debugCamera;
 
-  deBugScreen({Key? key, required this.debugCamera}) : super(key: key);
+  deBugScreen({Key? key}) : super(key: key);
 
   @override
   _deBugScreenState createState() => _deBugScreenState();
@@ -96,7 +95,7 @@ class _deBugScreenState extends State<deBugScreen> {
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) =>
-                    TakePictureScreenDebug(camera: widget.debugCamera)
+                    TakePictureScreenDebug()
                   ),
                 );
               }, 

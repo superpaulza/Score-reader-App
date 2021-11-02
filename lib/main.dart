@@ -16,16 +16,20 @@ import 'package:score_scanner/demo/file.dart';
 import 'package:score_scanner/pages/filemanager/filemanager.dart';
 import 'package:score_scanner/pages/camera/camera.dart';
 
+List<CameraDescription> cameras = [];
 Future<void> main() async {
-  // Ensure that plugin services are initialized so that `availableCameras()`
-  // can be called before `runApp()`
-  WidgetsFlutterBinding.ensureInitialized();
+  try {
+    // Ensure that plugin services are initialized so that `availableCameras()`
+    // can be called before `runApp()`
+    WidgetsFlutterBinding.ensureInitialized();
 
-  // Obtain a list of the available cameras on the device.
-  final cameras = await availableCameras();
+    // Obtain a list of the available cameras on the device.
+    cameras = await availableCameras();
 
-  // Get a specific camera from the list of available cameras.
-  final firstCamera = cameras.first;
+    // Get a specific camera from the list of available cameras.
+  } on CameraException catch (e) {
+    print('Error in fetching the cameras: $e');
+  }
 
   runApp(MaterialApp(
       //Setting
@@ -36,9 +40,9 @@ Future<void> main() async {
       routes: {
         // '/': (BuildContext context) => new HomePage(),
         // '/2': (BuildContext context) => new SecondPage(),
-        '/cam': (BuildContext context) => new TakePictureScreen(camera: firstCamera),
+        '/cam': (BuildContext context) => new TakePictureScreen(),
         '/file': (BuildContext context) => new fileManager(),
-        '/debug': (BuildContext context) => new deBugScreen(debugCamera: firstCamera),
+        '/debug': (BuildContext context) => new deBugScreen(),
       })
     );
 }

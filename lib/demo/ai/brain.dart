@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:camera/camera.dart';
@@ -15,8 +16,8 @@ class AppBrain {
     Tflite.close();
     try {
       await Tflite.loadModel(
-        // model: "assets/models/model_eff.tflite",
-        model: "assets/models/converted_mnist_model.tflite",
+        model: "assets/models/model_eff.tflite",
+        // model: "assets/models/converted_mnist_model.tflite",
         labels: "assets/models/labels.txt",
       );
     } on PlatformException {
@@ -25,8 +26,20 @@ class AppBrain {
   }
 
   Future<List?> predictImage(File imageData) async {
-    return await Tflite.runModelOnImage(path: imageData.path);
+    List? data = await Tflite.detectObjectOnImage(
+      path: imageData.path,
+      threshold: 0.1,
+      numResultsPerClass: 1,
+    );
+    log(data.toString());
+    return data;
   }
+
+  // Future<List?> predictImage(File imageData) async {
+  //   return await Tflite.runModelOnImage(
+  //     path: imageData.path
+  //   );
+  // }
 
   // Future<List?> predictImage(File imageData) async {
   //   final bytes = await imageData.readAsBytes();

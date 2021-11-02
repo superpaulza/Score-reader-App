@@ -108,19 +108,23 @@ class _PublicDrawerState extends State<PublicDrawer> {
               leading: Icon(Icons.settings),
               onTap: () {
                 Navigator.pop(context);
-          final snackBar = SnackBar(
-            content: const Text('Unavailable! For premium uses only'),
-            action: SnackBarAction(
-              label: 'OK',
-              onPressed: () {
-                // Some code to undo the change.
-              },
-            ),
-          );
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text('Unavailable! Premium user only can use this menu!'),
+                duration: const Duration(seconds: 2),
+                ));
+          // final snackBar = SnackBar(
+          //   content: const Text('Unavailable! For premium uses only'),
+          //   action: SnackBarAction(
+          //     label: 'OK',
+          //     onPressed: () {
+          //       // Some code to undo the change.
+          //     },
+          //   ),
+          // );
 
-          // Find the ScaffoldMessenger in the widget tree
-          // and use it to show a SnackBar.
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          // // Find the ScaffoldMessenger in the widget tree
+          // // and use it to show a SnackBar.
+          // ScaffoldMessenger.of(context).showSnackBar(snackBar);
               },
             ),
             ListTile(

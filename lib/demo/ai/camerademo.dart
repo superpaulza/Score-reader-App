@@ -1,45 +1,47 @@
 // A screen that allows users to take a picture using a given camera.
-import 'dart:developer';
-import 'dart:io';
-
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:score_scanner/demo/ai/aitest.dart';
+import 'package:score_scanner/demo/ai/displaydemo.dart';
 
+import 'package:score_scanner/pages/camera/display.dart';
 import 'package:score_scanner/modules/drawer.dart';
+import 'package:score_scanner/main.dart';
 
 class TakePictureScreenDebug extends StatefulWidget {
-  const TakePictureScreenDebug({
-    Key? key,
-    required this.camera,
-  }) : super(key: key);
 
-  final CameraDescription camera;
+  const TakePictureScreenDebug({Key? key}) : super(key: key);
 
-  @override
+@override
   _TakePictureScreenDebugState createState() => _TakePictureScreenDebugState();
 }
 
-class _TakePictureScreenDebugState extends State<TakePictureScreenDebug> {
-  late CameraController _controller;
-  late Future<void> _initializeControllerFuture;
+class _TakePictureScreenDebugState extends State<TakePictureScreenDebug> 
+  with WidgetsBindingObserver {
+  CameraController? _controller;
+  Future<void>? _initializeControllerFuture;
+  var isCameraReady = false;
+  XFile? imgFile;
+
   var scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance!.addObserver(this);
     // To display the current output from the Camera,
     // create a CameraController.
     _controller = CameraController(
       // Get a specific camera from the list of available cameras.
-      widget.camera,
+      cameras[0],
       // Define the resolution to use.
       ResolutionPreset.max,
+
+      imageFormatGroup: ImageFormatGroup.jpeg,
     );
 
     // Next, initialize the controller. This returns a Future.
-    _initializeControllerFuture = _controller.initialize();
+    _initializeControllerFuture = _controller!.initialize();
 
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
@@ -50,8 +52,9 @@ class _TakePictureScreenDebugState extends State<TakePictureScreenDebug> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance!.removeObserver(this);
     // Dispose of the controller when the widget is disposed.
-    _controller.dispose();
+    _controller?.dispose();
 
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeRight,
@@ -65,14 +68,18 @@ class _TakePictureScreenDebugState extends State<TakePictureScreenDebug> {
 
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      _controller != null
-          ? _initializeControllerFuture = _controller.initialize()
+      _initializeControllerFuture = _controller != null 
+          ? _controller!.initialize()
           : null; //on pause camera disposed so we need call again "issue is only for android"
-  
+    if(!mounted)
+      return;
+    setState(() {
+      isCameraReady = true;
+    });
     }
   }
 
-  Widget cameraPreview() {
+  Widget cameraPreview(context) {
       // You must wait until the controller is initialized before displaying the
       // camera preview. Use a FutureBuilder to display a loading spinner until the
       // controller has finished initializing.
@@ -81,7 +88,14 @@ class _TakePictureScreenDebugState extends State<TakePictureScreenDebug> {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             // If the Future is complete, display the preview.
-            return CameraPreview(_controller);
+            var camera = _controller!.value;
+            final size = MediaQuery.of(context).size;
+            var scale = size.aspectRatio * camera.aspectRatio;
+            if(scale < 1) scale = 1 / scale;
+            return Transform.scale(
+              scale: scale,
+              child: CameraPreview(_controller!),
+            );
           } else {
             // Otherwise, display a loading indicator.
             return const Center(child: CircularProgressIndicator());
@@ -90,21 +104,14 @@ class _TakePictureScreenDebugState extends State<TakePictureScreenDebug> {
     );
   }
 
-  Widget cameraControl() {
+  captureImageButton(BuildContext context) {
     return Expanded(
       child: Align(
-        alignment: Alignment.center,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          mainAxisSize: MainAxisSize.max,
-          children: <Widget>[
-            FloatingActionButton(
-              child: Icon(
-                Icons.camera,
-                color: Colors.black,
-              ),
-              backgroundColor: Colors.white,
-              onPressed: () async {
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 24),
+                child: InkWell(
+                  onTap: () async {
                     // Take the Picture in a try / catch block. If anything goes wrong,
                     // catch the error.
                     try {
@@ -113,25 +120,32 @@ class _TakePictureScreenDebugState extends State<TakePictureScreenDebug> {
 
                     // Attempt to take a picture and get the file `image`
                     // where it was saved.
-                    final image = await _controller.takePicture();
-
-                    // If the picture was taken, display it on a new screen.
-                    log(image.path.toString());
-                    await Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => aiTestScreen(
-                          imageData: File(image.path)
-                        )
-                    ));
+                    _controller!.takePicture().then((file) => {
+                      setState(() {
+                        imgFile = file;
+                      }),
+                      if(mounted) {
+                        // If the picture was taken, display it on a new screen.
+                        Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => DisplayPictureScreenDebug(
+                            imageData: file
+                          )
+                        ))
+                      }
+                    });
                     } catch (e) {
                       // If an error occurs, log the error to the console.
                       print(e);
-                    }
+                    } 
                   },
-            )
-          ],
-        ),
-      ),
+                  child: CircleAvatar(
+                    radius: 30,
+                    backgroundColor: Colors.white,
+                  ),
+                ),
+              ),
+            ),
     );
   }
 
@@ -141,7 +155,9 @@ class _TakePictureScreenDebugState extends State<TakePictureScreenDebug> {
                   top: 20,
                   child: IconButton(
                     icon: Icon(Icons.menu),
-                    onPressed: () => scaffoldKey.currentState!.openDrawer(),
+                    onPressed: () => {
+                      scaffoldKey.currentState!.openDrawer(),
+                    }
                   ),
                 );
   }
@@ -153,9 +169,12 @@ class _TakePictureScreenDebugState extends State<TakePictureScreenDebug> {
       body: Container(
         child: Stack(
           children: <Widget>[
+            Stack(children: [
+                    cameraPreview(context)
+                  ],),
             Align(
               alignment: Alignment.center,
-              child: cameraPreview(),
+              child: cameraPreview(context),
             ),
             Align(
               alignment: Alignment.bottomCenter,
@@ -167,7 +186,7 @@ class _TakePictureScreenDebugState extends State<TakePictureScreenDebug> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
-                    cameraControl(),
+                    captureImageButton(context),
                   ],
                 ),
               ),
@@ -177,18 +196,5 @@ class _TakePictureScreenDebugState extends State<TakePictureScreenDebug> {
         ),
       ),   
     );
-  }
-}
-
-class _MediaSizeClipper extends CustomClipper<Rect> {
-  final Size mediaSize;
-  const _MediaSizeClipper(this.mediaSize);
-  @override
-  Rect getClip(Size size) {
-    return Rect.fromLTWH(0, 0, mediaSize.width, mediaSize.height);
-  }
-  @override
-  bool shouldReclip(CustomClipper<Rect> oldClipper) {
-    return true;
   }
 }
