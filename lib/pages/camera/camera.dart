@@ -1,10 +1,14 @@
 // A screen that allows users to take a picture using a given camera.
+import 'dart:io';
+import 'dart:ui';
+
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:score_scanner/pages/camera/display.dart';
 import 'package:score_scanner/modules/drawer.dart';
+import 'package:score_scanner/modules/overlay.dart';
 import 'package:score_scanner/main.dart';
 
 class TakePictureScreen extends StatefulWidget {
@@ -21,6 +25,8 @@ class _TakePictureScreenState extends State<TakePictureScreen>
   Future<void>? _initializeControllerFuture;
   var isCameraReady = false;
   XFile? imgFile;
+  bool _toggleFlash = false;
+  IconData _icFlash = Icons.flashlight_off_rounded;
 
   var scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -34,13 +40,14 @@ class _TakePictureScreenState extends State<TakePictureScreen>
       // Get a specific camera from the list of available cameras.
       cameras[0],
       // Define the resolution to use.
-      ResolutionPreset.max,
+      ResolutionPreset.high,
 
       imageFormatGroup: ImageFormatGroup.jpeg,
     );
 
     // Next, initialize the controller. This returns a Future.
-    _initializeControllerFuture = _controller!.initialize();
+    _initializeControllerFuture = _controller?.initialize();
+
 
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
@@ -51,7 +58,7 @@ class _TakePictureScreenState extends State<TakePictureScreen>
 
   @override
   void dispose() {
-    WidgetsBinding.instance!.removeObserver(this);
+    WidgetsBinding.instance?.removeObserver(this);
     // Dispose of the controller when the widget is disposed.
     _controller?.dispose();
 
@@ -68,8 +75,9 @@ class _TakePictureScreenState extends State<TakePictureScreen>
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       _initializeControllerFuture = _controller != null 
-          ? _controller!.initialize()
-          : null; //on pause camera disposed so we need call again "issue is only for android"
+          ? _controller?.initialize()
+          : null; 
+    //on pause camera disposed so we need call again "issue is only for android"
     if(!mounted)
       return;
     setState(() {
@@ -79,28 +87,58 @@ class _TakePictureScreenState extends State<TakePictureScreen>
   }
 
   Widget cameraPreview(context) {
-      // You must wait until the controller is initialized before displaying the
+        // You must wait until the controller is initialized before displaying the
       // camera preview. Use a FutureBuilder to display a loading spinner until the
       // controller has finished initializing.
     return FutureBuilder<void>(
         future: _initializeControllerFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-            // If the Future is complete, display the preview.
+            _controller?.setFlashMode(FlashMode.off);
+            _controller?.lockCaptureOrientation(DeviceOrientation.portraitUp);
+            // If the Future is complete, display the preview. 
+            var size = MediaQuery.of(context).size;
             var camera = _controller!.value;
-            final size = MediaQuery.of(context).size;
             var scale = size.aspectRatio * camera.aspectRatio;
             if(scale < 1) scale = 1 / scale;
             return Transform.scale(
-              scale: scale,
-              child: CameraPreview(_controller!),
-            );
+                      scale: scale,
+                      child: CameraPreview(_controller!),
+                    );
           } else {
             // Otherwise, display a loading indicator.
             return const Center(child: CircularProgressIndicator());
           }
         },
     );
+  }
+
+  flashButton() {
+    return InkWell(
+        borderRadius:
+            BorderRadius.all(Radius.circular(50.0)),
+        onTap: () {
+            if (!_toggleFlash) {
+              setState(() {
+                _controller?.setFlashMode(FlashMode.always);
+                _icFlash = Icons.flashlight_on_rounded;
+                _toggleFlash = true;
+              });
+            } else {
+              setState(() {
+                _controller?.setFlashMode(FlashMode.off);
+                _icFlash = Icons.flashlight_off_rounded;
+                _toggleFlash = false;
+              });
+            }
+        },
+        child: Container(
+          alignment: Alignment.bottomLeft,
+          child: Icon(
+            _icFlash,
+          )
+          ),
+        );
   }
 
   captureImageButton(BuildContext context) {
@@ -110,16 +148,14 @@ class _TakePictureScreenState extends State<TakePictureScreen>
               child: Padding(
                 padding: const EdgeInsets.only(bottom: 24),
                 child: InkWell(
-                  onTap: () async {
+                  onTap: () {
                     // Take the Picture in a try / catch block. If anything goes wrong,
                     // catch the error.
-                    try {
                     // Ensure that the camera is initialized.
-                    await _initializeControllerFuture;
-
+                    HapticFeedback.selectionClick();
                     // Attempt to take a picture and get the file `image`
                     // where it was saved.
-                    _controller!.takePicture().then((file) => {
+                    _controller?.takePicture().then((file) => {
                       setState(() {
                         imgFile = file;
                       }),
@@ -133,10 +169,6 @@ class _TakePictureScreenState extends State<TakePictureScreen>
                         ))
                       }
                     });
-                    } catch (e) {
-                      // If an error occurs, log the error to the console.
-                      print(e);
-                    } 
                   },
                   child: CircleAvatar(
                     radius: 30,
@@ -162,6 +194,7 @@ class _TakePictureScreenState extends State<TakePictureScreen>
   }
   @override
   Widget build(BuildContext context) {
+    var size = MediaQuery.of(context).size.width;
     return Scaffold(
       key: scaffoldKey,
       drawer: PublicDrawer(),
@@ -171,6 +204,14 @@ class _TakePictureScreenState extends State<TakePictureScreen>
             Stack(children: [
                     Center(child: cameraPreview(context))
                   ],),
+            Container(
+              decoration: ShapeDecoration(
+                shape: _ScannerOverlayShape(
+                  borderColor: Colors.lightGreen,
+                  borderWidth: 3.0,
+                ),
+              ),
+            ),
             Align(
               alignment: Alignment.bottomCenter,
               child: Container(
@@ -190,6 +231,172 @@ class _TakePictureScreenState extends State<TakePictureScreen>
           ],
         ),
       ),   
+    );
+  }
+}
+
+class _ScannerOverlayShape extends ShapeBorder {
+  final Color borderColor;
+  final double borderWidth;
+  final Color overlayColor;
+
+  _ScannerOverlayShape({
+    this.borderColor = Colors.white,
+    this.borderWidth = 1.0,
+    this.overlayColor = const Color(0x88000000),
+  });
+
+  @override
+  EdgeInsetsGeometry get dimensions => EdgeInsets.all(10.0);
+
+  @override
+  Path getInnerPath(Rect rect, {TextDirection? textDirection}) {
+    return Path()
+      ..fillType = PathFillType.evenOdd
+      ..addPath(getOuterPath(rect), Offset.zero);
+  }
+
+  @override
+  Path getOuterPath(Rect rect, {TextDirection? textDirection}) {
+    Path _getLeftTopPath(Rect rect) {
+      return Path()
+        ..moveTo(rect.left, rect.bottom)
+        ..lineTo(rect.left, rect.top)
+        ..lineTo(rect.right, rect.top);
+    }
+
+    return _getLeftTopPath(rect)
+      ..lineTo(
+        rect.right,
+        rect.bottom,
+      )
+      ..lineTo(
+        rect.left,
+        rect.bottom,
+      )
+      ..lineTo(
+        rect.left,
+        rect.top,
+      );
+  }
+
+  @override
+  void paint(Canvas canvas, Rect rect, {TextDirection? textDirection}) {
+    const lineSize = 30;
+
+    final width = rect.width;
+    final borderWidthSize = width * 10 / 100;
+    final height = rect.height;
+    final borderHeightSize = height - (width - borderWidthSize);
+    final borderSize = Size(borderWidthSize / 2, borderHeightSize / 2);
+
+    var paint = Paint()
+      ..color = overlayColor
+      ..style = PaintingStyle.fill;
+
+    canvas
+      ..drawRect(
+        Rect.fromLTRB(rect.left, rect.top, rect.right, borderSize.height + rect.top),
+        paint,
+      )
+      ..drawRect(
+        Rect.fromLTRB(rect.left, rect.bottom - borderSize.height, rect.right, rect.bottom),
+        paint,
+      )
+      ..drawRect(
+        Rect.fromLTRB(rect.left, rect.top + borderSize.height, rect.left + borderSize.width, rect.bottom - borderSize.height),
+        paint,
+      )
+      ..drawRect(
+        Rect.fromLTRB(rect.right - borderSize.width, rect.top + borderSize.height, rect.right, rect.bottom - borderSize.height),
+        paint,
+      );
+
+    paint = Paint()
+      ..color = borderColor
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = borderWidth;
+
+    final borderOffset = borderWidth / 2;
+    final realReact = Rect.fromLTRB(borderSize.width + borderOffset, borderSize.height + borderOffset + rect.top, width - borderSize.width - borderOffset,
+        height - borderSize.height - borderOffset + rect.top);
+
+    //Draw top right corner
+    canvas
+      ..drawPath(
+          Path()
+            ..moveTo(realReact.right, realReact.top)
+            ..lineTo(realReact.right, realReact.top + lineSize),
+          paint)
+      ..drawPath(
+          Path()
+            ..moveTo(realReact.right, realReact.top)
+            ..lineTo(realReact.right - lineSize, realReact.top),
+          paint)
+      ..drawPoints(
+        PointMode.points,
+        [Offset(realReact.right, realReact.top)],
+        paint,
+      )
+
+      //Draw top left corner
+      ..drawPath(
+          Path()
+            ..moveTo(realReact.left, realReact.top)
+            ..lineTo(realReact.left, realReact.top + lineSize),
+          paint)
+      ..drawPath(
+          Path()
+            ..moveTo(realReact.left, realReact.top)
+            ..lineTo(realReact.left + lineSize, realReact.top),
+          paint)
+      ..drawPoints(
+        PointMode.points,
+        [Offset(realReact.left, realReact.top)],
+        paint,
+      )
+
+      //Draw bottom right corner
+      ..drawPath(
+          Path()
+            ..moveTo(realReact.right, realReact.bottom)
+            ..lineTo(realReact.right, realReact.bottom - lineSize),
+          paint)
+      ..drawPath(
+          Path()
+            ..moveTo(realReact.right, realReact.bottom)
+            ..lineTo(realReact.right - lineSize, realReact.bottom),
+          paint)
+      ..drawPoints(
+        PointMode.points,
+        [Offset(realReact.right, realReact.bottom)],
+        paint,
+      )
+
+      //Draw bottom left corner
+      ..drawPath(
+          Path()
+            ..moveTo(realReact.left, realReact.bottom)
+            ..lineTo(realReact.left, realReact.bottom - lineSize),
+          paint)
+      ..drawPath(
+          Path()
+            ..moveTo(realReact.left, realReact.bottom)
+            ..lineTo(realReact.left + lineSize, realReact.bottom),
+          paint)
+      ..drawPoints(
+        PointMode.points,
+        [Offset(realReact.left, realReact.bottom)],
+        paint,
+      );
+  }
+
+  @override
+  ShapeBorder scale(double t) {
+    return _ScannerOverlayShape(
+      borderColor: borderColor,
+      borderWidth: borderWidth,
+      overlayColor: overlayColor,
     );
   }
 }

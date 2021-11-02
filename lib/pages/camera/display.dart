@@ -2,10 +2,11 @@ import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:score_scanner/modules/drawer.dart';
 
+import 'package:score_scanner/modules/drawer.dart';
 import 'package:score_scanner/modules/recognizer/brain.dart';
-import 'package:image/image.dart' as im;
+import 'package:score_scanner/modules/utility.dart';
+
 
 // A widget that displays the picture taken by the user.
 class DisplayPictureScreen extends StatelessWidget {
@@ -21,7 +22,16 @@ class DisplayPictureScreen extends StatelessWidget {
       drawer: PublicDrawer(),
       // The image is stored as a file on the device. Use the `Image.file`
       // constructor with the given path to display the image.
-      body: Image.file(File(imageData.path)),
+      body: FutureBuilder<void>(
+        future: ImageProcessor.cropIMG(imageData.path, 0, 350, 720, 500),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            return Image.file(File(imageData.path));
+          } else {
+            return const Center(child: CircularProgressIndicator());
+          }
+        }
+      )
     );
   }
 }
