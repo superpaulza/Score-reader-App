@@ -33,7 +33,7 @@ class _aiTestScreenState extends State<aiTestScreen> {
       drawer: PublicDrawer(),
       body: Container(
         child: FutureBuilder<List?>(
-          future: brain.predictImage(widget.imageData),
+          future: brain.preProcessImage(widget.imageData),
           builder: (BuildContext context, AsyncSnapshot<List?> snapshot) {
             List<Widget> children;
             if (snapshot.hasData) {

@@ -23,7 +23,7 @@ class DisplayPictureScreen extends StatelessWidget {
       // The image is stored as a file on the device. Use the `Image.file`
       // constructor with the given path to display the image.
       body: FutureBuilder<void>(
-        future: ImageProcessor.cropIMG(imageData.path, 0, 350, 720, 500),
+        future: ImageProcessor.cropSquare(imageData.path, false),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             return Image.file(File(imageData.path));

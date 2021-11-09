@@ -1,4 +1,5 @@
 // A screen that allows users to take a picture using a given camera.
+import 'dart:developer';
 import 'dart:io';
 import 'dart:ui';
 
@@ -8,7 +9,6 @@ import 'package:flutter/services.dart';
 
 import 'package:score_scanner/pages/camera/display.dart';
 import 'package:score_scanner/modules/drawer.dart';
-import 'package:score_scanner/modules/overlay.dart';
 import 'package:score_scanner/main.dart';
 
 class TakePictureScreen extends StatefulWidget {
@@ -94,7 +94,7 @@ class _TakePictureScreenState extends State<TakePictureScreen>
         future: _initializeControllerFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-            _controller?.setFlashMode(FlashMode.off);
+            // _controller?.setFlashMode(FlashMode.off);
             _controller?.lockCaptureOrientation(DeviceOrientation.portraitUp);
             // If the Future is complete, display the preview. 
             var size = MediaQuery.of(context).size;
@@ -183,7 +183,7 @@ class _TakePictureScreenState extends State<TakePictureScreen>
   Widget mainDrawer(){
     return Positioned(
                   left: 10,
-                  top: 20,
+                  top: 25 ,
                   child: IconButton(
                     icon: Icon(Icons.menu),
                     onPressed: () => {
@@ -293,7 +293,7 @@ class _ScannerOverlayShape extends ShapeBorder {
     var paint = Paint()
       ..color = overlayColor
       ..style = PaintingStyle.fill;
-
+      
     canvas
       ..drawRect(
         Rect.fromLTRB(rect.left, rect.top, rect.right, borderSize.height + rect.top),

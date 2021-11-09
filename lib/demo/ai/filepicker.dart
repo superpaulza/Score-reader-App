@@ -1,9 +1,12 @@
 import 'dart:io';
 
+import 'package:camera/camera.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:score_scanner/demo/ai/aitest.dart';
+import 'package:score_scanner/demo/ai/displaydemo.dart';
 import 'package:score_scanner/modules/drawer.dart';
+import 'package:score_scanner/modules/utility.dart';
 
 class filePickerScreen extends StatelessWidget {
   @override
@@ -21,8 +24,8 @@ class filePickerScreen extends StatelessWidget {
             PlatformFile file = result.files.first;
             await Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => aiTestScreen(
-                  imageData: File(file.path as String)
+                builder: (context) => DisplayPictureScreenDebug(
+                  imageData: XFile(file.path as String)
                 )
             ));
           },

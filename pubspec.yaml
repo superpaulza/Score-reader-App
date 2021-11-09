@@ -44,6 +44,7 @@ dependencies:
   csv: ^5.0.0
   tflite: ^1.1.2
   image: ^3.0.8
+  shared_preferences: ^2.0.8
 
 dev_dependencies:
   flutter_test:
@@ -79,6 +80,7 @@ flutter:
     - assets/models/converted_mnist_model.tflite
     - assets/models/labels.txt
     - assets/models/model_eff.tflite
+    - assets/models/model.tflite
     - assets/models/test/7.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see

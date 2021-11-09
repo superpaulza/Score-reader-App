@@ -15,6 +15,7 @@ import 'package:score_scanner/demo/second.dart';
 import 'package:score_scanner/demo/file.dart';
 import 'package:score_scanner/pages/filemanager/filemanager.dart';
 import 'package:score_scanner/pages/camera/camera.dart';
+import 'package:score_scanner/pages/settings.dart';
 
 List<CameraDescription> cameras = [];
 Future<void> main() async {
@@ -43,6 +44,7 @@ Future<void> main() async {
         '/cam': (BuildContext context) => new TakePictureScreen(),
         '/file': (BuildContext context) => new fileManager(),
         '/debug': (BuildContext context) => new deBugScreen(),
+        '/settings': (BuildContext context) => new settingsPage(),
       })
     );
 }

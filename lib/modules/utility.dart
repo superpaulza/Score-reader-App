@@ -6,6 +6,7 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/rendering.dart';
 import 'package:image/image.dart' as IMG;
+import 'dart:typed_data';
 
 class imageas {
   static Future<File> getImageFileFromAssets(String path) async {
@@ -19,6 +20,7 @@ class imageas {
 }
 
 class ImageProcessor {
+  // ImageProcessor.cropIMG(imageData.path, 180, 400, 320, 320)
   static Future<void> cropIMG(String srcFilePath, int x, int y, int w, int h) async {
   var bytes = await File(srcFilePath).readAsBytes();
   IMG.Image? src = IMG.decodeImage(bytes);
@@ -27,7 +29,7 @@ class ImageProcessor {
     await File(srcFilePath).writeAsBytes(jpg);
   }
 
-  static Future cropSquare(String srcFilePath, String destFilePath, bool flip) async {
+  static Future cropSquare(String srcFilePath, bool flip) async {
     var bytes = await File(srcFilePath).readAsBytes();
     IMG.Image? src = IMG.decodeImage(bytes);
 
@@ -43,6 +45,6 @@ class ImageProcessor {
     }
 
     var jpg = IMG.encodeJpg(destImage);
-    await File(destFilePath).writeAsBytes(jpg);
+    await File(srcFilePath).writeAsBytes(jpg);
   }
 }

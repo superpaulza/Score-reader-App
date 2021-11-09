@@ -107,11 +107,29 @@ class _PublicDrawerState extends State<PublicDrawer> {
               title: const Text('Settings'),
               leading: Icon(Icons.settings),
               onTap: () {
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text('Unavailable! Premium user only can use this menu!'),
-                duration: const Duration(seconds: 2),
-                ));
+                // Update the state of the app
+                // ...
+                // Then close the drawer
+                const newRouteName = "/settings";
+                bool isNewRouteSameAsCurrent = false;
+                Navigator.popUntil(context, (route) {
+                if (route.settings.name == newRouteName) {
+                  isNewRouteSameAsCurrent = true;
+                }
+                  return true;
+                });
+
+                if (!isNewRouteSameAsCurrent) {
+                  Navigator.pop(context);
+                  Navigator.of(context).pushNamed(newRouteName);
+                } else {
+                  Navigator.pop(context);
+                }
+                // Navigator.pop(context);
+                // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                // content: Text('Unavailable! Premium user only can use this menu!'),
+                // duration: const Duration(seconds: 2),
+                // ));
           // final snackBar = SnackBar(
           //   content: const Text('Unavailable! For premium uses only'),
           //   action: SnackBarAction(
