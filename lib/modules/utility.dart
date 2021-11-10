@@ -2,7 +2,9 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:image_cropper/image_cropper.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/rendering.dart';
 import 'package:image/image.dart' as IMG;
@@ -21,15 +23,17 @@ class imageas {
 
 class ImageProcessor {
   // ImageProcessor.cropIMG(imageData.path, 180, 400, 320, 320)
-  static Future<void> cropIMG(String srcFilePath, int x, int y, int w, int h) async {
+  static Future<File?> cropIMG(String srcFilePath, int x, int y, int w, int h) async {
   var bytes = await File(srcFilePath).readAsBytes();
   IMG.Image? src = IMG.decodeImage(bytes);
   IMG.Image destImage = IMG.copyCrop(src!, x, y, w, h);
   var jpg = IMG.encodeJpg(destImage);
     await File(srcFilePath).writeAsBytes(jpg);
+  return File(srcFilePath);
   }
 
-  static Future cropSquare(String srcFilePath, bool flip) async {
+  static Future<File?> cropSquare(String srcFilePath, bool flip) async {
+    File croppedFile = File(srcFilePath);
     var bytes = await File(srcFilePath).readAsBytes();
     IMG.Image? src = IMG.decodeImage(bytes);
 
@@ -45,6 +49,40 @@ class ImageProcessor {
     }
 
     var jpg = IMG.encodeJpg(destImage);
-    await File(srcFilePath).writeAsBytes(jpg);
+    await croppedFile.writeAsBytes(jpg);
+    return croppedFile;
+  }
+
+    static Future<File?> cropImageDialog(String imageFile) async {
+    File? croppedFile = await ImageCropper.cropImage(
+        sourcePath: imageFile,
+        aspectRatioPresets: Platform.isAndroid
+            ? [
+                CropAspectRatioPreset.square,
+                CropAspectRatioPreset.ratio3x2,
+                CropAspectRatioPreset.original,
+                CropAspectRatioPreset.ratio4x3,
+                CropAspectRatioPreset.ratio16x9
+              ]
+            : [
+                CropAspectRatioPreset.original,
+                CropAspectRatioPreset.square,
+                CropAspectRatioPreset.ratio3x2,
+                CropAspectRatioPreset.ratio4x3,
+                CropAspectRatioPreset.ratio5x3,
+                CropAspectRatioPreset.ratio5x4,
+                CropAspectRatioPreset.ratio7x5,
+                CropAspectRatioPreset.ratio16x9
+              ],
+        androidUiSettings: AndroidUiSettings(
+            toolbarTitle: 'Cropper',
+            toolbarColor: Colors.deepOrange,
+            toolbarWidgetColor: Colors.white,
+            initAspectRatio: CropAspectRatioPreset.original,
+            lockAspectRatio: false),
+        iosUiSettings: IOSUiSettings(
+          title: 'Cropper',
+    ));
+    return croppedFile;
   }
 }

@@ -6,10 +6,14 @@ import 'dart:ui';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:score_scanner/demo/crop.dart';
+import 'package:score_scanner/pages/camera/crop.dart';
 
 import 'package:score_scanner/pages/camera/display.dart';
 import 'package:score_scanner/modules/drawer.dart';
 import 'package:score_scanner/main.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class TakePictureScreen extends StatefulWidget {
 
@@ -32,7 +36,6 @@ class _TakePictureScreenState extends State<TakePictureScreen>
 
   @override
   void initState() {
-    super.initState();
     WidgetsBinding.instance!.addObserver(this);
     // To display the current output from the Camera,
     // create a CameraController.
@@ -161,12 +164,12 @@ class _TakePictureScreenState extends State<TakePictureScreen>
                       }),
                       if(mounted) {
                         // If the picture was taken, display it on a new screen.
-                        Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => DisplayPictureScreen(
-                            imageData: file
-                          )
-                        ))
+                          Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => CropperScreen(
+                              imageData: file
+                            )
+                          ))
                       }
                     });
                   },
