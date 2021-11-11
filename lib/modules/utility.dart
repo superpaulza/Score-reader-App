@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:image_cropper/image_cropper.dart';
@@ -21,9 +22,21 @@ class imageas {
   }
 }
 
+class fileMaker {
+  static Future<File> makeCSV(String name) async {
+    List<List<dynamic>> data = [];
+    String csvData = ListToCsvConverter().convert(data);
+    String directory = (await getApplicationSupportDirectory()).path;
+    String filePath = '$directory/$name.csv';
+    File tempfile = File(filePath);
+    await tempfile.writeAsString(csvData);
+    return tempfile;
+  }
+}
+
 class ImageProcessor {
   // ImageProcessor.cropIMG(imageData.path, 180, 400, 320, 320)
-  static Future<File?> cropIMG(String srcFilePath, int x, int y, int w, int h) async {
+  static Future<File> cropIMG(String srcFilePath, int x, int y, int w, int h) async {
   var bytes = await File(srcFilePath).readAsBytes();
   IMG.Image? src = IMG.decodeImage(bytes);
   IMG.Image destImage = IMG.copyCrop(src!, x, y, w, h);
@@ -32,8 +45,8 @@ class ImageProcessor {
   return File(srcFilePath);
   }
 
-  static Future<File?> cropSquare(String srcFilePath, bool flip) async {
-    File croppedFile = File(srcFilePath);
+  static Future<File> cropSquare(String srcFilePath, bool flip) async {
+    File? croppedFile;
     var bytes = await File(srcFilePath).readAsBytes();
     IMG.Image? src = IMG.decodeImage(bytes);
 
@@ -49,11 +62,11 @@ class ImageProcessor {
     }
 
     var jpg = IMG.encodeJpg(destImage);
-    await croppedFile.writeAsBytes(jpg);
-    return croppedFile;
+    croppedFile = await File(srcFilePath).writeAsBytes(jpg);
+    return  croppedFile;
   }
-
-    static Future<File?> cropImageDialog(String imageFile) async {
+  
+  static Future<File?> cropImageDialog(String imageFile) async {
     File? croppedFile = await ImageCropper.cropImage(
         sourcePath: imageFile,
         aspectRatioPresets: Platform.isAndroid

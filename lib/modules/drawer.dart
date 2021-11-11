@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:score_scanner/modules/themechanger.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PublicDrawer extends StatefulWidget {
   PublicDrawer({Key? key}) : super(key: key);
@@ -8,10 +11,54 @@ class PublicDrawer extends StatefulWidget {
 }
 
 class _PublicDrawerState extends State<PublicDrawer> {
+  bool _isDeug = false;
+  SharedPreferences? preferences;
+
+  Future<void> initializePreference() async {
+    this.preferences = await SharedPreferences.getInstance();
+    setState(() {
+      _isDeug = (preferences!.getBool('isDebug') ?? false);
+    });
+  }
+
   @override
   void initState() {
     super.initState();
+     initializePreference().whenComplete(() {
+       setState(() {});
+     });
   }
+
+  Widget DeveloperMode() {
+    if(_isDeug) {
+      return ListTile(
+              title: const Text('Debug'),
+              leading: Icon(Icons.bug_report),
+              onTap: () {
+                // Update the state of the app
+                // ...
+                // Then close the drawer
+                const newRouteName = "/debug";
+                bool isNewRouteSameAsCurrent = false;
+                Navigator.popUntil(context, (route) {
+                if (route.settings.name == newRouteName) {
+                  isNewRouteSameAsCurrent = true;
+                }
+                  return true;
+                });
+
+                if (!isNewRouteSameAsCurrent) {
+                  Navigator.pop(context);
+                  Navigator.of(context).pushNamed(newRouteName);
+                } else {
+                  Navigator.pop(context);
+                }
+              },
+            );
+    }
+    return Container();
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -145,30 +192,7 @@ class _PublicDrawerState extends State<PublicDrawer> {
           // ScaffoldMessenger.of(context).showSnackBar(snackBar);
               },
             ),
-            ListTile(
-              title: const Text('Debug'),
-              leading: Icon(Icons.bug_report),
-              onTap: () {
-                // Update the state of the app
-                // ...
-                // Then close the drawer
-                const newRouteName = "/debug";
-                bool isNewRouteSameAsCurrent = false;
-                Navigator.popUntil(context, (route) {
-                if (route.settings.name == newRouteName) {
-                  isNewRouteSameAsCurrent = true;
-                }
-                  return true;
-                });
-
-                if (!isNewRouteSameAsCurrent) {
-                  Navigator.pop(context);
-                  Navigator.of(context).pushNamed(newRouteName);
-                } else {
-                  Navigator.pop(context);
-                }
-              },
-            ),
+            DeveloperMode(),
           ],
         ),
     );

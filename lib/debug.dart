@@ -5,11 +5,8 @@ import 'package:camera/camera.dart';
 import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:score_scanner/demo/ai/camerademo.dart';
-import 'package:score_scanner/demo/ai/filepicker.dart';
-import 'package:score_scanner/demo/handwrite_ai/recognizer_screen.dart';
-
 import 'package:score_scanner/modules/drawer.dart';
+import 'package:score_scanner/pages/csv/editablecsv.dart';
 
 class deBugScreen extends StatefulWidget {
 
@@ -57,57 +54,6 @@ class _deBugScreenState extends State<deBugScreen> {
           Center(
           child:
             ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) =>
-                    RecognizerScreen(),
-                  ),
-                );
-              }, 
-              child: Text(
-                'Model Example', 
-                style: TextStyle(fontSize: 22)
-              ),
-            )
-          ),
-          Center(
-          child:
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) =>
-                    filePickerScreen()
-                  ),
-                );
-              }, 
-              child: Text(
-                'Test Model with image', 
-                style: TextStyle(fontSize: 22)
-              ),
-            )
-          ),
-          Center(
-          child:
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) =>
-                    TakePictureScreenDebug()
-                  ),
-                );
-              }, 
-              child: Text(
-                'Test Model with camera', 
-                style: TextStyle(fontSize: 22)
-              ),
-            )
-          ),
-          Center(
-          child:
-            ElevatedButton(
               onPressed: () {log('eiei');}, 
               child: Text(
                 'Log to console', 
@@ -123,11 +69,12 @@ class _deBugScreenState extends State<deBugScreen> {
 
   //Test Generate CSV Files
 generateCSVFile() async {
-  List<List<String>> data = [
-    ['No', 'Score'],
-    ['1','0'],
-    ['2','20.99'],
-    ['99','-9999']
+  List<List<dynamic>> data = [
+    [10, 20],
+    [1, 9],
+    [2, 8],
+    [5, 7],
+    [1, 20],
   ];
   String csvData = ListToCsvConverter().convert(data);
   String directory = (await getApplicationSupportDirectory()).path;

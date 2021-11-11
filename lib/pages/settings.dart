@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:score_scanner/modules/themechanger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class settingsPage extends StatefulWidget {
@@ -12,6 +14,7 @@ class _settingsPageState extends State<settingsPage> {
   bool _isCrop = false;
   bool _isDebug = false;
   bool _isGayray = false;
+  bool _themeDark = true;
   SharedPreferences? preferences;
 
   @override
@@ -28,6 +31,7 @@ class _settingsPageState extends State<settingsPage> {
       _isCrop = (preferences!.getBool('isCrop') ?? false);
       _isDebug = (preferences!.getBool('isDebug') ?? false);
       _isGayray = (preferences!.getBool('isGayray') ?? false);
+      _themeDark = (preferences!.getBool('isthemeDark') ?? true);
     });
   }
 
@@ -56,7 +60,7 @@ class _settingsPageState extends State<settingsPage> {
           body: Column(
             children: <Widget>[
               SwitchListTile(
-                title: const Text('Manual Crop'),
+                title: const Text('Manual Crop (BETA)'),
                 value: _isCrop,
                 onChanged: (bool value) {
                   setState(() {
@@ -78,7 +82,7 @@ class _settingsPageState extends State<settingsPage> {
                 secondary: const Icon(Icons.bug_report),
               ),
               SwitchListTile(
-                title: const Text('Enable Gayray Mode'),
+                title: const Text('Enable เ ก เ ร Mode'),
                 value: _isGayray,
                 onChanged: (bool value) {
                   setState(() {
@@ -86,8 +90,24 @@ class _settingsPageState extends State<settingsPage> {
                     this.preferences?.setBool("isDebug", _isGayray);
                   });
                 },
-                secondary: const Icon(Icons.bug_report),
+                secondary: const Icon(Icons.sports_handball_sharp),
               ),
+            SwitchListTile(
+              title: const Text('Theme Dark'),
+              value: _themeDark,
+              onChanged: (bool value) {
+                setState(() {
+                  ThemeChanger themeChange =
+                      Provider.of<ThemeChanger>(context, listen: false);
+                  _themeDark = value;
+                  _themeDark
+                      ? themeChange.setTheme(ThemeData.dark())
+                      : themeChange.setTheme(ThemeData.light());
+                  this.preferences?.setBool("isthemeDark", _themeDark);
+                });
+              },
+              secondary: const Icon(Icons.dark_mode),
+            ),
             ]
           )
       );

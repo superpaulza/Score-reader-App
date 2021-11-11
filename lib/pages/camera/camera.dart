@@ -4,20 +4,23 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:camera/camera.dart';
+import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_cropper/image_cropper.dart';
-import 'package:score_scanner/demo/crop.dart';
-import 'package:score_scanner/pages/camera/crop.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:score_scanner/modules/utility.dart';
 
-import 'package:score_scanner/pages/camera/display.dart';
 import 'package:score_scanner/modules/drawer.dart';
 import 'package:score_scanner/main.dart';
+import 'package:score_scanner/pages/camera/crop.dart';
+import 'package:score_scanner/pages/camera/preview.dart';
+import 'package:score_scanner/pages/csv/viewcsv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class TakePictureScreen extends StatefulWidget {
-
-  const TakePictureScreen({Key? key}) : super(key: key);
+  final File file;
+  const TakePictureScreen({Key? key, required this.file}) : super(key: key);
 
 @override
   _TakePictureScreenState createState() => _TakePictureScreenState();
@@ -28,14 +31,29 @@ class _TakePictureScreenState extends State<TakePictureScreen>
   CameraController? _controller;
   Future<void>? _initializeControllerFuture;
   var isCameraReady = false;
-  XFile? imgFile;
+  File? imgFile;
   bool _toggleFlash = false;
   IconData _icFlash = Icons.flashlight_off_rounded;
+  bool _isCrop = false;
+  SharedPreferences? preferences;
+
+
+  Future<void> initializePreference() async {
+    this.preferences = await SharedPreferences.getInstance();
+    setState(() {
+      _isCrop = (preferences!.getBool('isCrop') ?? false);
+    });
+  }
+
 
   var scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
+    super.initState();
+     initializePreference().whenComplete(() {
+       setState(() {});
+     });
     WidgetsBinding.instance!.addObserver(this);
     // To display the current output from the Camera,
     // create a CameraController.
@@ -144,30 +162,47 @@ class _TakePictureScreenState extends State<TakePictureScreen>
         );
   }
 
+  Future<XFile?> takePicture() async {
+    final CameraController? cameraController = _controller;
+    if (cameraController!.value.isTakingPicture) {
+      // A capture is already pending, do nothing.
+      return null;
+    }
+    try {
+      XFile file = await cameraController.takePicture();
+      return file;
+    } on CameraException catch (e) {
+      print('Error occured while taking picture: $e');
+      return null;
+    }
+  }
+
   captureImageButton(BuildContext context) {
     return Expanded(
-      child: Align(
+      child: 
+          Align(
               alignment: Alignment.bottomCenter,
               child: Padding(
                 padding: const EdgeInsets.only(bottom: 24),
                 child: InkWell(
-                  onTap: () {
+                  onTap: () async {
                     // Take the Picture in a try / catch block. If anything goes wrong,
                     // catch the error.
                     // Ensure that the camera is initialized.
                     HapticFeedback.selectionClick();
                     // Attempt to take a picture and get the file `image`
                     // where it was saved.
-                    _controller?.takePicture().then((file) => {
+                    await takePicture().then((file) => {
                       setState(() {
-                        imgFile = file;
+                        imgFile = File(file!.path);
                       }),
                       if(mounted) {
                         // If the picture was taken, display it on a new screen.
                           Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (context) => CropperScreen(
-                              imageData: file
+                              imageData: File(imgFile!.path),
+                              fileData: widget.file
                             )
                           ))
                       }
@@ -177,9 +212,37 @@ class _TakePictureScreenState extends State<TakePictureScreen>
                     radius: 30,
                     backgroundColor: Colors.white,
                   ),
+                )
                 ),
               ),
-            ),
+            );
+  }
+
+  AddtoListButton(BuildContext context) {
+  return Expanded(
+    child:           
+      Align(
+        alignment: Alignment.bottomRight,
+        child: Padding(
+            padding: const EdgeInsets.only(bottom: 60, right: 50),
+            child: InkWell(
+              child: IconButton(
+                icon: Icon(
+                  Icons.library_books,
+                  size: 50,
+                  ),
+                onPressed: () {
+                  Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => viewCSV(
+                      csvFilePath: widget.file.path,
+                    )
+                  ));
+                },
+            )
+          )
+        )
+      )
     );
   }
 
@@ -218,8 +281,6 @@ class _TakePictureScreenState extends State<TakePictureScreen>
             Align(
               alignment: Alignment.bottomCenter,
               child: Container(
-                height: 120,
-                width: double.infinity,
                 padding: EdgeInsets.all(15),
                 color: Colors.transparent,
                 child: Row(
@@ -228,6 +289,15 @@ class _TakePictureScreenState extends State<TakePictureScreen>
                     captureImageButton(context),
                   ],
                 ),
+              ),
+            ),
+            Align(
+              alignment: Alignment.bottomRight,
+              child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                      AddtoListButton(context),
+                  ],
               ),
             ),
           mainDrawer(),
@@ -403,3 +473,4 @@ class _ScannerOverlayShape extends ShapeBorder {
     );
   }
 }
+

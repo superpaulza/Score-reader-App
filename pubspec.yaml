@@ -45,6 +45,8 @@ dependencies:
   tflite: ^1.1.2
   image: ^3.0.8
   shared_preferences: ^2.0.8
+  editable: ^2.0.0
+  provider: ^6.0.1
 
 dev_dependencies:
   flutter_test:
