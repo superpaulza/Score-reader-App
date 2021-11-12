@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
@@ -22,7 +23,7 @@ class imageas {
   }
 }
 
-class fileMaker {
+class fileManage {
   static Future<File> makeCSV(String name) async {
     List<List<dynamic>> data = [];
     String csvData = ListToCsvConverter().convert(data);
@@ -31,6 +32,21 @@ class fileMaker {
     File tempfile = File(filePath);
     await tempfile.writeAsString(csvData);
     return tempfile;
+  }
+  static Future<List<List<dynamic>>> displayCSVData(String path) async { 
+    final csvFile = File(path).openRead();   
+    return await csvFile
+      .transform(utf8.decoder)
+      .transform(CsvToListConverter())
+      .toList();
+
+
+  }
+
+  static Future<void> writeListDatatoFile (List<List<dynamic>> yourListOfLists, String filePath) async {
+    String csv = const ListToCsvConverter().convert(yourListOfLists);
+    File file = await File(filePath);
+    file.writeAsString(csv);    
   }
 }
 

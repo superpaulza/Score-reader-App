@@ -25,6 +25,8 @@ class _fileListViewState extends State<fileListView> {
     super.initState();
   }
   String searchString = "";
+  late File file;
+  String valueText = "";
 
   Future<void> _displayTextInputDialog(BuildContext context) async {
     return showDialog(
@@ -48,17 +50,19 @@ class _fileListViewState extends State<fileListView> {
                   setState(() {
                     Navigator.pop(context);
                     valueText = "";
+                    fileEditingController.clear();
                   });
                 },
               ),
               TextButton(
                 child: Text('OK'),
                 onPressed: () async {
-                  file = await fileMaker.makeCSV(valueText);
+                  file = await fileManage.makeCSV(valueText);
                   setState(() {
+                    Navigator.pop(context);
                     file = file;
                     valueText = "";
-                    Navigator.pop(context);
+                    fileEditingController.clear();
                   });
                 },
               ),
@@ -67,9 +71,6 @@ class _fileListViewState extends State<fileListView> {
           );
         });
   }
-
-  late File file;
-  late String valueText;
 
   @override
   Widget build(BuildContext context) {
@@ -146,11 +147,15 @@ class _fileListViewState extends State<fileListView> {
                     return snapshot.data![index].path.split('/').last.contains(searchString)
                     ? Card(
                         child: ListTile(
-                        onTap: () {
+                        onTap: () async {
+                          List<List<dynamic>> dataList = await fileManage.displayCSVData(snapshot.data![index].path);
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (_) =>
-                              viewCSV(csvFilePath: snapshot.data![index].path),
+                              viewCSV(
+                                csvFileList: dataList,
+                                csvFilePath: snapshot.data![index].path,
+                              ),
                             ),
                           );
                         },

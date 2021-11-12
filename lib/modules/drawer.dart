@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:score_scanner/modules/themechanger.dart';
@@ -28,6 +30,7 @@ class _PublicDrawerState extends State<PublicDrawer> {
        setState(() {});
      });
   }
+
 
   Widget DeveloperMode() {
     if(_isDeug) {

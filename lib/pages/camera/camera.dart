@@ -231,11 +231,13 @@ class _TakePictureScreenState extends State<TakePictureScreen>
                   Icons.library_books,
                   size: 50,
                   ),
-                onPressed: () {
+                onPressed: () async {
+                  List<List<dynamic>> dataList = await fileManage.displayCSVData(widget.file.path);
                   Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) => viewCSV(
                       csvFilePath: widget.file.path,
+                      csvFileList: dataList,
                     )
                   ));
                 },

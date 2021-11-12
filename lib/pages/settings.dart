@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:score_scanner/modules/themechanger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/services.dart';
 
 class settingsPage extends StatefulWidget {
   settingsPage({Key? key}) : super(key: key);
@@ -84,10 +85,10 @@ class _settingsPageState extends State<settingsPage> {
               SwitchListTile(
                 title: const Text('Enable เ ก เ ร Mode'),
                 value: _isGayray,
-                onChanged: (bool value) {
+                onChanged: (bool value) async {
                   setState(() {
                     _isGayray = value;
-                    this.preferences?.setBool("isDebug", _isGayray);
+                    this.preferences?.setBool("isGayray", _isGayray);
                   });
                 },
                 secondary: const Icon(Icons.sports_handball_sharp),

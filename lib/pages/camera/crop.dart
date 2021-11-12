@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:score_scanner/modules/drawer.dart';
 import 'package:score_scanner/modules/recognizer/brain.dart';
 import 'package:score_scanner/modules/utility.dart';
+import 'package:score_scanner/pages/camera/camera.dart';
 import 'package:score_scanner/pages/camera/preview.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:score_scanner/modules/recognizer/brain.dart';
@@ -42,7 +43,13 @@ class _CropperScreenState extends State<CropperScreen> {
             child: new Text('No'),
           ),
           TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
+            onPressed: () {
+              Navigator.of(context).pop(true);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => TakePictureScreen(file: widget.fileData)),
+              );
+            },
             child: new Text('Yes'),
           ),
         ],
@@ -67,7 +74,10 @@ class _CropperScreenState extends State<CropperScreen> {
   }
 
   Widget AIRecognition(File myFile) {
-    return FutureBuilder<List?>(
+    return Column(
+      children: [
+        Image.file(myFile),
+        FutureBuilder<List?>(
           future: brain.preProcessImage(myFile),
           builder: (BuildContext context, AsyncSnapshot<List?> snapshot) {
             List<Widget> children;
@@ -116,7 +126,9 @@ class _CropperScreenState extends State<CropperScreen> {
               ),
             );
           },
-        );
+        ),
+      ],
+    );
   }
 
   Widget ImageCropper() {
@@ -146,7 +158,18 @@ class _CropperScreenState extends State<CropperScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("AI Recognition")),
+      appBar: AppBar(
+        title: const Text("AI Recognition"),
+        // leading: new IconButton(
+        //   icon: new Icon(Icons.arrow_back),
+        //   onPressed: () {
+        //     Navigator.push(
+        //       context,
+        //       MaterialPageRoute(builder: (context) => TakePictureScreen(file: widget.fileData)),
+        //     );
+        //   },
+        // ),
+      ),
       // The image is stored as a file on the device. Use the `Image.file`
       // constructor with the given path to display the image.
       body: WillPopScope(

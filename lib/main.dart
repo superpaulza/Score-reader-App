@@ -36,7 +36,7 @@ Future<void> main() async {
     print('Error in fetching the cameras: $e');
   }
 
-  File tempfile = await fileMaker.makeCSV("Untitled");
+  File tempfile = await fileManage.makeCSV("Untitled");
 
   runApp(MainApp(myFile: tempfile));
 }
