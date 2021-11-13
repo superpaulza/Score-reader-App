@@ -78,7 +78,7 @@ class MainWidget extends StatelessWidget {
           routes: {
             // '/': (BuildContext context) => new HomePage(),
             // '/2': (BuildContext context) => new SecondPage(),
-            '/cam': (BuildContext context) => new TakePictureScreen(file: myFile),
+            '/cam': (BuildContext context) => new TakePictureScreen(file: myFile, fileList: [],),
             '/file': (BuildContext context) => new fileManager(),
             '/settings': (BuildContext context) => new settingsPage(),
             '/debug': (BuildContext context) => new deBugScreen(),

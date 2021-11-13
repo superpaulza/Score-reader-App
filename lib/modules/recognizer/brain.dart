@@ -17,7 +17,7 @@ class AppBrain {
     Tflite.close();
     try {
       await Tflite.loadModel(
-        model: "assets/models/model_eff.tflite",
+        model: "assets/models/model.tflite",
         labels: "assets/models/labels.txt",
       );
     } on PlatformException {
@@ -30,7 +30,7 @@ class AppBrain {
     var bytes = await imageData.readAsBytes();
     im.Image? src = im.decodeImage(bytes);
     src = im.grayscale(src!);
-    src = im.sobel(src);
+    // src = im.sobel(src);
 
     final appDir = await syspaths.getTemporaryDirectory();
     File file = File('${appDir.path}/img.jpg');
@@ -44,7 +44,7 @@ class AppBrain {
   Future<List?> predictImage(String image) async {
     List<dynamic>? data = await Tflite.detectObjectOnImage(
       path: image,
-      threshold: 0.3,
+      threshold: 0.4,
       numResultsPerClass: 10,
     );
     data?.sort((a, b) => a['rect']['x'].compareTo(b['rect']['x']));

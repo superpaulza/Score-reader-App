@@ -57,6 +57,12 @@ class _settingsPageState extends State<settingsPage> {
   return Scaffold(
           appBar: AppBar(
             title: Text('App Setting'),
+            // leading: new IconButton(
+            //   icon: new Icon(Icons.arrow_back),
+            //   onPressed: () {
+            //     Navigator.of(context).pop();
+            //   },
+            // ),
           ),
           body: Column(
             children: <Widget>[

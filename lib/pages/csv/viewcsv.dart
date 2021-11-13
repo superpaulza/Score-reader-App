@@ -49,6 +49,7 @@ class _viewCSVState extends State<viewCSV> {
                 },
                 controller: _idController,
                 decoration: InputDecoration(hintText: "Enter Student ID"),
+                keyboardType: TextInputType.number,
                 ),
                 TextField(
                 onChanged: (value) {
@@ -58,6 +59,7 @@ class _viewCSVState extends State<viewCSV> {
                 },
                 controller: _valueController,
                 decoration: InputDecoration(hintText: "Enter Score"),
+                keyboardType: TextInputType.number,
                 ),
               ],
             ),
@@ -288,6 +290,7 @@ class _viewCSVState extends State<viewCSV> {
                     MaterialPageRoute(
                       builder: (context) => TakePictureScreen(
                         file: File(widget.csvFilePath),
+                        fileList: widget.csvFileList
                       )
                     ));
                   }, 

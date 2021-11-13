@@ -74,12 +74,12 @@ class _PublicDrawerState extends State<PublicDrawer> {
               decoration: BoxDecoration(
                 color: Colors.blue,
                 image: DecorationImage(
-                  image: AssetImage("assets/img/icon.png"),
+                  image: AssetImage("assets/img/No_AI_bullet_curve.png"),
                      fit: BoxFit.cover
                 )
               ),
               child: 
-                Text('Score Scanner Mobile Application'),
+                Text(""),
             ),
             ListTile(
               title: const Text('Home'),

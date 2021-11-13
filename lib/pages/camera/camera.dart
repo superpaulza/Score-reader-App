@@ -13,14 +13,20 @@ import 'package:score_scanner/modules/utility.dart';
 
 import 'package:score_scanner/modules/drawer.dart';
 import 'package:score_scanner/main.dart';
-import 'package:score_scanner/pages/camera/crop.dart';
+import 'package:score_scanner/pages/camera/preview.dart';
 import 'package:score_scanner/pages/camera/preview.dart';
 import 'package:score_scanner/pages/csv/viewcsv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class TakePictureScreen extends StatefulWidget {
   final File file;
-  const TakePictureScreen({Key? key, required this.file}) : super(key: key);
+  final List<List<dynamic>> fileList;
+
+  const TakePictureScreen({
+    Key? key, 
+    required this.file,
+    required this.fileList
+    }) : super(key: key);
 
 @override
   _TakePictureScreenState createState() => _TakePictureScreenState();
@@ -36,7 +42,7 @@ class _TakePictureScreenState extends State<TakePictureScreen>
   IconData _icFlash = Icons.flashlight_off_rounded;
   bool _isCrop = false;
   SharedPreferences? preferences;
-
+  bool singleTap = true;
 
   Future<void> initializePreference() async {
     this.preferences = await SharedPreferences.getInstance();
@@ -163,19 +169,51 @@ class _TakePictureScreenState extends State<TakePictureScreen>
   }
 
   Future<XFile?> takePicture() async {
+    await initializePreference();
     final CameraController? cameraController = _controller;
     if (cameraController!.value.isTakingPicture) {
       // A capture is already pending, do nothing.
       return null;
     }
     try {
+      File? temp;
       XFile file = await cameraController.takePicture();
+      await ImageProcessor.cropSquare(file.path, false);
+      temp = File(file.path);
+      if(_isCrop) {
+        try {
+          temp = await ImageProcessor.cropImageDialog(file.path);
+          return XFile(temp!.path);
+        } catch(e) {
+          print(e);
+        }
+      }
       return file;
     } on CameraException catch (e) {
       print('Error occured while taking picture: $e');
       return null;
     }
   }
+
+  void _onLoading() {
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return Dialog(
+        child: new Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            new CircularProgressIndicator(),
+            new Text("Loading"),
+          ],
+        ),
+      );
+    },
+  );
+  }
+
+
 
   captureImageButton(BuildContext context) {
     return Expanded(
@@ -185,28 +223,39 @@ class _TakePictureScreenState extends State<TakePictureScreen>
               child: Padding(
                 padding: const EdgeInsets.only(bottom: 24),
                 child: InkWell(
-                  onTap: () async {
+                  onTap: () {
+                    _onLoading();
+                    if (singleTap) {
+                      // Do something here
+                      setState(() {
+                      singleTap = false; // update bool
+                      });
                     // Take the Picture in a try / catch block. If anything goes wrong,
                     // catch the error.
                     // Ensure that the camera is initialized.
                     HapticFeedback.selectionClick();
                     // Attempt to take a picture and get the file `image`
                     // where it was saved.
-                    await takePicture().then((file) => {
+                    takePicture().then((file) => {
                       setState(() {
                         imgFile = File(file!.path);
                       }),
-                      if(mounted) {
+
+                    
+                    
+                    if(mounted) {
                         // If the picture was taken, display it on a new screen.
                           Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (context) => CropperScreen(
-                              imageData: File(imgFile!.path),
-                              fileData: widget.file
+                            builder: (context) => PreviewScreen(
+                              imageData: File(file!.path),
+                              fileData: widget.file,
+                              csvfileList: widget.fileList,
                             )
                           ))
                       }
                     });
+                    }
                   },
                   child: CircleAvatar(
                     radius: 30,

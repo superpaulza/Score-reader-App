@@ -27,6 +27,7 @@ class _fileListViewState extends State<fileListView> {
   String searchString = "";
   late File file;
   String valueText = "";
+  List<FileSystemEntity> fileSystem = [];
 
   Future<void> _displayTextInputDialog(BuildContext context) async {
     return showDialog(
@@ -59,6 +60,7 @@ class _fileListViewState extends State<fileListView> {
                 onPressed: () async {
                   file = await fileManage.makeCSV(valueText);
                   setState(() {
+                    fileSystem.add(file);
                     Navigator.pop(context);
                     file = file;
                     valueText = "";
@@ -102,13 +104,13 @@ class _fileListViewState extends State<fileListView> {
               Align(
                 alignment: Alignment.centerLeft,
                 child: ElevatedButton(
-                  onPressed: () {
+                  onPressed: ()  {
                     _displayTextInputDialog(context);
                   }, 
                   child: Text("+ Create new file")
                 ),
               ),
-          ),  
+          ),
           // Padding(
           //   padding: const EdgeInsets.all(8.0),
           //   child: 
@@ -141,26 +143,27 @@ class _fileListViewState extends State<fileListView> {
                     child: Text('No CSV File found from Local Storage.'),
                   );
                 }
+                fileSystem = snapshot.data!;
                 return ListView.builder(
-                  itemCount: snapshot.data!.length,
+                  itemCount: fileSystem.length,
                   itemBuilder: (context, index) {
-                    return snapshot.data![index].path.split('/').last.contains(searchString)
+                    return fileSystem[index].path.split('/').last.contains(searchString)
                     ? Card(
                         child: ListTile(
                         onTap: () async {
-                          List<List<dynamic>> dataList = await fileManage.displayCSVData(snapshot.data![index].path);
+                          List<List<dynamic>> dataList = await fileManage.displayCSVData(fileSystem[index].path);
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (_) =>
                               viewCSV(
                                 csvFileList: dataList,
-                                csvFilePath: snapshot.data![index].path,
+                                csvFilePath: fileSystem[index].path,
                               ),
                             ),
                           );
                         },
                         title: Text(
-                          snapshot.data![index].path.split('/').last,
+                          fileSystem[index].path.split('/').last,
                           style: TextStyle(fontWeight: FontWeight.bold),
                         )
                       ),
