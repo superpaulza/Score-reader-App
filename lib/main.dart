@@ -16,7 +16,7 @@ import 'package:score_scanner/pages/csv/editablecsv.dart';
 
 //import routes
 import 'package:score_scanner/pages/filemanager/filemanager.dart';
-import 'package:score_scanner/pages/camera/camera.dart';
+import 'package:score_scanner/pages/camera/takepicture.dart';
 import 'package:score_scanner/pages/settings.dart';
 
 import 'modules/themechanger.dart';
@@ -36,7 +36,7 @@ Future<void> main() async {
     print('Error in fetching the cameras: $e');
   }
 
-  File tempfile = await fileManage.makeCSV("Untitled");
+  File tempfile = await fileManage.makeCSVasTemp("Untitled");
 
   runApp(MainApp(myFile: tempfile));
 }

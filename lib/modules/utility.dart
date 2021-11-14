@@ -33,14 +33,23 @@ class fileManage {
     await tempfile.writeAsString(csvData);
     return tempfile;
   }
+
+  static Future<File> makeCSVasTemp(String name) async {
+    List<List<dynamic>> data = [];
+    String csvData = ListToCsvConverter().convert(data);
+    String directory = (await getApplicationSupportDirectory()).path;
+    String filePath = '$directory/$name.csv';
+    File tempfile = File(filePath);
+    await tempfile.writeAsString(csvData);
+    return tempfile;
+  }
+
   static Future<List<List<dynamic>>> displayCSVData(String path) async { 
     final csvFile = File(path).openRead();   
     return await csvFile
       .transform(utf8.decoder)
       .transform(CsvToListConverter())
       .toList();
-
-
   }
 
   static Future<void> writeListDatatoFile (List<List<dynamic>> yourListOfLists, String filePath) async {

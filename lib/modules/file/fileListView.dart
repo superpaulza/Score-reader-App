@@ -42,7 +42,10 @@ class _fileListViewState extends State<fileListView> {
                 });
               },
               controller: fileEditingController,
-              decoration: InputDecoration(hintText: "Enter filename"),
+              decoration: InputDecoration(
+                labelText: "File Name",
+                hintText: "Enter filename"
+                ),
             ),
             actions: <Widget>[
               TextButton(

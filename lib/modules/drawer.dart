@@ -81,54 +81,54 @@ class _PublicDrawerState extends State<PublicDrawer> {
               child: 
                 Text(""),
             ),
-            ListTile(
-              title: const Text('Home'),
-              leading: Icon(Icons.home),
-              onTap: () {
-                // Update the state of the app
-                // ...
-                // Then close the drawer
-                const newRouteName = "/cam";
-                bool isNewRouteSameAsCurrent = false;
-                Navigator.popUntil(context, (route) {
-                if (route.settings.name == newRouteName) {
-                  isNewRouteSameAsCurrent = true;
-                }
-                  return true;
-                });
+            // ListTile(
+            //   title: const Text('Home'),
+            //   leading: Icon(Icons.home),
+            //   onTap: () {
+            //     // Update the state of the app
+            //     // ...
+            //     // Then close the drawer
+            //     const newRouteName = "/cam";
+            //     bool isNewRouteSameAsCurrent = false;
+            //     Navigator.popUntil(context, (route) {
+            //     if (route.settings.name == newRouteName) {
+            //       isNewRouteSameAsCurrent = true;
+            //     }
+            //       return true;
+            //     });
 
-                if (!isNewRouteSameAsCurrent) {
-                  Navigator.pop(context);
-                  Navigator.of(context).pushNamed(newRouteName);
-                } else {
-                  Navigator.pop(context);
-                }
-              },
-            ),
-            ListTile(
-              title: const Text('Scanner'),
-              leading: Icon(Icons.scanner),
-              onTap: () {
-                // Update the state of the app
-                // ...
-                // Then close the drawer
-                const newRouteName = "/cam";
-                bool isNewRouteSameAsCurrent = false;
-                Navigator.popUntil(context, (route) {
-                if (route.settings.name == newRouteName) {
-                  isNewRouteSameAsCurrent = true;
-                }
-                  return true;
-                });
+            //     if (!isNewRouteSameAsCurrent) {
+            //       Navigator.pop(context);
+            //       Navigator.of(context).pushNamed(newRouteName);
+            //     } else {
+            //       Navigator.pop(context);
+            //     }
+            //   },
+            // ),
+            // ListTile(
+            //   title: const Text('Scanner'),
+            //   leading: Icon(Icons.scanner),
+            //   onTap: () {
+            //     // Update the state of the app
+            //     // ...
+            //     // Then close the drawer
+            //     const newRouteName = "/cam";
+            //     bool isNewRouteSameAsCurrent = false;
+            //     Navigator.popUntil(context, (route) {
+            //     if (route.settings.name == newRouteName) {
+            //       isNewRouteSameAsCurrent = true;
+            //     }
+            //       return true;
+            //     });
 
-                if (!isNewRouteSameAsCurrent) {
-                  Navigator.pop(context);
-                  Navigator.of(context).pushNamed(newRouteName);
-                } else {
-                  Navigator.pop(context);
-                }
-              },
-            ),
+            //     if (!isNewRouteSameAsCurrent) {
+            //       Navigator.pop(context);
+            //       Navigator.of(context).pushNamed(newRouteName);
+            //     } else {
+            //       Navigator.pop(context);
+            //     }
+            //   },
+            // ),
             ListTile(
               title: const Text('File Manager'),
               leading: Icon(Icons.folder_open),
@@ -193,6 +193,30 @@ class _PublicDrawerState extends State<PublicDrawer> {
           // // Find the ScaffoldMessenger in the widget tree
           // // and use it to show a SnackBar.
           // ScaffoldMessenger.of(context).showSnackBar(snackBar);
+              },
+            ),
+            ListTile(
+              title: const Text('About'),
+              leading: Icon(Icons.info),
+              onTap: () {
+                // Update the state of the app
+                // ...
+                // Then close the drawer
+                const newRouteName = "/about";
+                bool isNewRouteSameAsCurrent = false;
+                Navigator.popUntil(context, (route) {
+                if (route.settings.name == newRouteName) {
+                  isNewRouteSameAsCurrent = true;
+                }
+                  return true;
+                });
+
+                if (!isNewRouteSameAsCurrent) {
+                  Navigator.pop(context);
+                  Navigator.of(context).pushNamed(newRouteName);
+                } else {
+                  Navigator.pop(context);
+                }
               },
             ),
             DeveloperMode(),

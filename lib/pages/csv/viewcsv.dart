@@ -4,8 +4,9 @@ import 'dart:io';
 
 import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
-import 'package:score_scanner/pages/camera/camera.dart';
+import 'package:score_scanner/pages/camera/takepicture.dart';
 import 'package:score_scanner/modules/utility.dart';
+import 'package:share/share.dart';
 
 class viewCSV extends StatefulWidget {
   final List<List<dynamic>> csvFileList;
@@ -48,7 +49,10 @@ class _viewCSVState extends State<viewCSV> {
                   });
                 },
                 controller: _idController,
-                decoration: InputDecoration(hintText: "Enter Student ID"),
+                decoration: InputDecoration(
+                  labelText: "Student ID",
+                  hintText: "Enter Student ID"
+                  ),
                 keyboardType: TextInputType.number,
                 ),
                 TextField(
@@ -58,7 +62,10 @@ class _viewCSVState extends State<viewCSV> {
                   });
                 },
                 controller: _valueController,
-                decoration: InputDecoration(hintText: "Enter Score"),
+                decoration: InputDecoration(
+                  labelText: "Score",
+                  hintText: "Enter Score"
+                  ),
                 keyboardType: TextInputType.number,
                 ),
               ],
@@ -275,7 +282,7 @@ class _viewCSVState extends State<viewCSV> {
                   onPressed: () {
                     _addNewRecordDialog(context);
                   }, 
-                  child: Text("+ Add record")
+                  child: Text("Add")
                 ),
               ),
           ),  
@@ -286,15 +293,30 @@ class _viewCSVState extends State<viewCSV> {
                 alignment: Alignment.centerLeft,
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.of(context).push(
+                    Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(
                       builder: (context) => TakePictureScreen(
                         file: File(widget.csvFilePath),
                         fileList: widget.csvFileList
                       )
-                    ));
+                    ),
+                    (Route<dynamic> route) => false
+                    );
                   }, 
                   child: Text("Use this file")
+                ),
+              ),
+          ),  
+         Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: 
+              Align(
+                alignment: Alignment.centerLeft,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    await Share.shareFiles([widget.csvFilePath]);
+                  }, 
+                  child: Text("Export to CSV")
                 ),
               ),
           ),  

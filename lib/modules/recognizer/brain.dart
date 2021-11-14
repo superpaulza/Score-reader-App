@@ -25,7 +25,11 @@ class AppBrain {
     }
   }
 
-  Future<List?> preProcessImage(File imageData) async {
+  void close() async {
+    Tflite.close();
+  }
+
+  Future<List?> NoAIBulletCurve(File imageData) async {
     //Convert color image to grayscale image
     var bytes = await imageData.readAsBytes();
     im.Image? src = im.decodeImage(bytes);

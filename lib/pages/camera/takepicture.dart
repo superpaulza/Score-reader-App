@@ -43,6 +43,8 @@ class _TakePictureScreenState extends State<TakePictureScreen>
   bool _isCrop = false;
   SharedPreferences? preferences;
   bool singleTap = true;
+  double scale = 0;
+  bool _initializing = false;
 
   Future<void> initializePreference() async {
     this.preferences = await SharedPreferences.getInstance();
@@ -51,43 +53,73 @@ class _TakePictureScreenState extends State<TakePictureScreen>
     });
   }
 
+   void initializeCamera(CameraDescription cameraDescription) async {
+      final previousCameraController = _controller;
+      // Instantiating the camera controller
+      final CameraController cameraController = CameraController(
+        cameraDescription,
+        ResolutionPreset.high,
+        imageFormatGroup: ImageFormatGroup.jpeg,
+      );
+
+      // Dispose the previous controller
+      await previousCameraController?.dispose();
+
+      // Replace with the new controller
+      if (mounted) {
+         setState(() {
+           _controller = cameraController;
+        });
+      }
+
+      // Update UI if controller updated
+      cameraController.addListener(() {
+        if (mounted) setState(() {});
+      });
+
+      // Initialize controller
+      try {
+        await cameraController.initialize();
+      } on CameraException catch (e) {
+        print('Error initializing camera: $e');
+      }
+
+      _initializing = false;
+
+      // Update the boolean
+      if (mounted) {
+        setState(() {
+           isCameraReady = _controller!.value.isInitialized;
+        });
+      }
+   }
+
 
   var scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
     super.initState();
+    _initializing = true;
      initializePreference().whenComplete(() {
        setState(() {});
      });
     WidgetsBinding.instance!.addObserver(this);
-    // To display the current output from the Camera,
-    // create a CameraController.
-    _controller = CameraController(
-      // Get a specific camera from the list of available cameras.
-      cameras[0],
-      // Define the resolution to use.
-      ResolutionPreset.high,
 
-      imageFormatGroup: ImageFormatGroup.jpeg,
-    );
-
-    // Next, initialize the controller. This returns a Future.
-    _initializeControllerFuture = _controller?.initialize();
+    initializeCamera(cameras[0]);
 
 
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
-
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance?.removeObserver(this);
     // Dispose of the controller when the widget is disposed.
-    _controller?.dispose();
+    // _controller?.dispose();
 
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeRight,
@@ -99,45 +131,76 @@ class _TakePictureScreenState extends State<TakePictureScreen>
     super.dispose();
   }
 
+
+ @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      _initializeControllerFuture = _controller != null 
-          ? _controller?.initialize()
-          : null; 
-    //on pause camera disposed so we need call again "issue is only for android"
-    if(!mounted)
+  if(_initializing){
+    return;
+  }
+    final CameraController? cameraController = _controller;
+
+    // App state changed before we got the chance to initialize.
+    if (cameraController == null || !cameraController.value.isInitialized) {
       return;
-    setState(() {
-      isCameraReady = true;
-    });
+    }
+
+    if (state == AppLifecycleState.inactive) {
+      // Free up memory when camera not active
+      cameraController.dispose();
+    } else if (state == AppLifecycleState.resumed) {
+      // Reinitialize the camera with same properties
+      initializeCamera(cameraController.description);
     }
   }
 
+  // void didChangeAppLifecycleState(AppLifecycleState state) {
+  //   if (state == AppLifecycleState.resumed) {
+  //     _initializeControllerFuture = _controller != null 
+  //         ? _controller?.initialize()
+  //         : null; 
+  //   //on pause camera disposed so we need call again "issue is only for android"
+  //   if(!mounted)
+  //     return;
+  //   setState(() {
+  //     isCameraReady = true;
+  //   });
+  //   }
+  // }
+
   Widget cameraPreview(context) {
+    return isCameraReady
+          ? Transform.scale(
+              scale: (MediaQuery.of(context).size.aspectRatio * _controller!.value.aspectRatio) < 1 
+              ? 1 / (MediaQuery.of(context).size.aspectRatio * _controller!.value.aspectRatio)
+              : (MediaQuery.of(context).size.aspectRatio * _controller!.value.aspectRatio),
+              child: CameraPreview(_controller!),
+            )
+          : Center(child: CircularProgressIndicator());
         // You must wait until the controller is initialized before displaying the
       // camera preview. Use a FutureBuilder to display a loading spinner until the
       // controller has finished initializing.
-    return FutureBuilder<void>(
-        future: _initializeControllerFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            // _controller?.setFlashMode(FlashMode.off);
-            _controller?.lockCaptureOrientation(DeviceOrientation.portraitUp);
-            // If the Future is complete, display the preview. 
-            var size = MediaQuery.of(context).size;
-            var camera = _controller!.value;
-            var scale = size.aspectRatio * camera.aspectRatio;
-            if(scale < 1) scale = 1 / scale;
-            return Transform.scale(
-                      scale: scale,
-                      child: CameraPreview(_controller!),
-                    );
-          } else {
-            // Otherwise, display a loading indicator.
-            return const Center(child: CircularProgressIndicator());
-          }
-        },
-    );
+    // return FutureBuilder<void>(
+    //     future: _initializeControllerFuture,
+    //     builder: (context, snapshot) {
+    //       if (snapshot.connectionState == ConnectionState.done) {
+    //         // _controller?.setFlashMode(FlashMode.off);
+    //         _controller?.lockCaptureOrientation(DeviceOrientation.portraitUp);
+    //         // If the Future is complete, display the preview. 
+    //         var size = MediaQuery.of(context).size;
+    //         var camera = _controller!.value;
+    //         var scale = size.aspectRatio * camera.aspectRatio;
+    //         if(scale < 1) scale = 1 / scale;
+    //         return Transform.scale(
+    //                   scale: scale,
+    //                   child: CameraPreview(_controller!),
+    //                 );
+    //       } else {
+    //         // Otherwise, display a loading indicator.
+    //         return const Center(child: CircularProgressIndicator());
+    //       }
+    //     },
+    // );
+
   }
 
   flashButton() {
@@ -201,13 +264,31 @@ class _TakePictureScreenState extends State<TakePictureScreen>
     barrierDismissible: false,
     builder: (BuildContext context) {
       return Dialog(
-        child: new Row(
+        child: Padding(
+          padding: EdgeInsets.all(10),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                child:  Image(
+                image: AssetImage("assets/img/loading.gif"),
+                width: 200,
+                height: 200,
+              ),
+              ),
+        Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            new CircularProgressIndicator(),
-            new Text("Loading"),
+            CircularProgressIndicator(),
+            Padding(
+              padding: EdgeInsets.only(left: 30),
+              child: Text("Loading"),
+              ),
           ],
         ),
+            ],
+          )
+        )
       );
     },
   );
@@ -319,7 +400,8 @@ class _TakePictureScreenState extends State<TakePictureScreen>
         child: Stack(
           children: <Widget>[
             Stack(children: [
-                    Center(child: cameraPreview(context))
+                    Center(
+                      child: cameraPreview(context))
                   ],),
             Container(
               decoration: ShapeDecoration(
@@ -524,4 +606,3 @@ class _ScannerOverlayShape extends ShapeBorder {
     );
   }
 }
-
