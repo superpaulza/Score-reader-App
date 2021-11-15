@@ -18,6 +18,7 @@ import 'package:score_scanner/pages/csv/editablecsv.dart';
 //import routes
 import 'package:score_scanner/pages/filemanager/filemanager.dart';
 import 'package:score_scanner/pages/camera/takepicture.dart';
+import 'package:score_scanner/pages/popNo.dart';
 import 'package:score_scanner/pages/settings.dart';
 
 import 'modules/themechanger.dart';
@@ -83,7 +84,8 @@ class MainWidget extends StatelessWidget {
             '/file': (BuildContext context) => new fileManager(),
             '/settings': (BuildContext context) => new settingsPage(),
             '/debug': (BuildContext context) => new deBugScreen(),
-            '/about' : (BuildContext context) => new aboutPage()
+            '/about' : (BuildContext context) => new aboutPage(),
+            '/popno' : (BuildContext context) => new popNo()
           });
     });
   }

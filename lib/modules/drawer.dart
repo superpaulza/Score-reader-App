@@ -14,12 +14,14 @@ class PublicDrawer extends StatefulWidget {
 
 class _PublicDrawerState extends State<PublicDrawer> {
   bool _isDeug = false;
+  bool _isGayray = false;
   SharedPreferences? preferences;
 
   Future<void> initializePreference() async {
     this.preferences = await SharedPreferences.getInstance();
     setState(() {
       _isDeug = (preferences!.getBool('isDebug') ?? false);
+      _isGayray = (preferences!.getBool('isGayray') ?? false);
     });
   }
 
@@ -61,6 +63,37 @@ class _PublicDrawerState extends State<PublicDrawer> {
     }
     return Container();
   }
+
+    Widget popNoMode() {
+    if(_isGayray) {
+      return ListTile(
+              title: const Text('PopNo'),
+              leading: Icon(Icons.play_arrow),
+              onTap: () {
+                // Update the state of the app
+                // ...
+                // Then close the drawer
+                const newRouteName = "/popno";
+                bool isNewRouteSameAsCurrent = false;
+                Navigator.popUntil(context, (route) {
+                if (route.settings.name == newRouteName) {
+                  isNewRouteSameAsCurrent = true;
+                }
+                  return true;
+                });
+
+                if (!isNewRouteSameAsCurrent) {
+                  Navigator.pop(context);
+                  Navigator.of(context).pushNamed(newRouteName);
+                } else {
+                  Navigator.pop(context);
+                }
+              },
+            );
+    }
+    return Container();
+  }
+
 
 
   @override
@@ -219,6 +252,7 @@ class _PublicDrawerState extends State<PublicDrawer> {
                 }
               },
             ),
+            popNoMode(),
             DeveloperMode(),
           ],
         ),
