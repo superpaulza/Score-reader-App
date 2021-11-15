@@ -124,6 +124,7 @@ class _viewCSVState extends State<viewCSV> {
                 },
                 controller: _idController,
                 decoration: InputDecoration(hintText: "Enter Student ID"),
+                keyboardType: TextInputType.number,
                 ),
                 TextField(
                 onChanged: (value) {
@@ -133,6 +134,7 @@ class _viewCSVState extends State<viewCSV> {
                 },
                 controller: _valueController,
                 decoration: InputDecoration(hintText: "Enter Score"),
+                keyboardType: TextInputType.number,
                 ),
               ],
             ),
@@ -250,7 +252,7 @@ class _viewCSVState extends State<viewCSV> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-      title: Text(widget.csvFilePath.split('/').last),
+      title: Text((widget.csvFilePath.split('/').last).split('.').first),
     ),
       body: Column(
         children: <Widget>[
@@ -263,6 +265,7 @@ class _viewCSVState extends State<viewCSV> {
                 });
               },
               controller: editingController,
+              keyboardType: TextInputType.number,
               decoration: InputDecoration(
                   labelText: "Search",
                   hintText: "Search",
@@ -271,6 +274,9 @@ class _viewCSVState extends State<viewCSV> {
                       borderRadius: BorderRadius.all(Radius.circular(25.0)))),
             ),
           ),
+          SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: 
             Row(
               children: <Widget>[
           Padding(
@@ -282,7 +288,7 @@ class _viewCSVState extends State<viewCSV> {
                   onPressed: () {
                     _addNewRecordDialog(context);
                   }, 
-                  child: Text("Add")
+                  child: Text("+ Add Record")
                 ),
               ),
           ),  
@@ -322,10 +328,30 @@ class _viewCSVState extends State<viewCSV> {
           ),  
           ],
           ),
+          ),
+          widget.csvFileList.isEmpty
+            ? Center(
+              child:
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.warning,
+                      size: 100,
+                    ),
+                    Text('No record.',
+                      style: TextStyle(fontSize: 20),
+                ),
+                  Text('Start adding record by using \'Use this file\' or \'+ Add record\'')
+                  ],
+                )
+            )
+            : 
           Expanded(
             child: ListView.builder(
                 itemCount: widget.csvFileList.length,
-                itemBuilder: (context, index) {
+                itemBuilder: (context, index) { 
                   return widget.csvFileList[index][0].toString().contains(searchString) || widget.csvFileList[index][1].toString().contains(searchString)
                   ? Card(
                       child: GestureDetector(
@@ -336,7 +362,8 @@ class _viewCSVState extends State<viewCSV> {
                           title: Text(
                             "Student ID: " + widget.csvFileList[index][0].toString() + "\nScore: " + widget.csvFileList[index][1].toString(),
                             style: TextStyle(fontWeight: FontWeight.bold),
-                        )
+                        ),
+                        leading: Icon(Icons.receipt),
                       ),
                       )
                     )

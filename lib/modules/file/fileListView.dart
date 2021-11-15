@@ -2,11 +2,13 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:score_scanner/modules/utility.dart';
 import 'package:score_scanner/pages/csv/editablecsv.dart';
 
 import 'package:score_scanner/pages/csv/viewcsv.dart';
+import 'package:share/share.dart';
 
 class fileListView extends StatefulWidget {
   final Future<List<FileSystemEntity>> AllCSVFiles;
@@ -28,6 +30,149 @@ class _fileListViewState extends State<fileListView> {
   late File file;
   String valueText = "";
   List<FileSystemEntity> fileSystem = [];
+  var currentIndex = 0;
+  String fileName = "";
+  String filePath = "";
+  late Offset detail;
+
+  TextEditingController _renameController = TextEditingController();
+
+  Future<void> _renameDialog(BuildContext context) async {
+    _renameController.text = fileName;
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Rename File'),
+            content: TextField(
+              onChanged: (value) {
+                setState(() {
+                  fileName = value;
+                });
+              },
+              controller: _renameController,
+              decoration: InputDecoration(
+                labelText: "File Name",
+                hintText: "Enter filename"
+                ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: Text('CANCEL'),
+                onPressed: () {
+                  setState(() {
+                    Navigator.pop(context);
+                    fileName = "";
+                    _renameController.clear();
+                  });
+                },
+              ),
+              TextButton(
+                child: Text('OK'),
+                onPressed: () async {
+                  file = await fileManage.renameFile(File(filePath), fileName);
+                  setState(() {
+                    fileSystem.removeAt(currentIndex);
+                    fileSystem.insert(currentIndex, file);
+                    Navigator.pop(context);
+                    fileName = "";
+                    _renameController.clear();
+                  });
+                },
+              ),
+
+            ],
+          );
+        });
+  }
+
+ Future<void> _deleteDialog(BuildContext context) async {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Delete this file?'),
+            actions: <Widget>[
+              TextButton(
+                child: Text('CANCEL'),
+                onPressed: () {
+                  setState(() {
+                    Navigator.pop(context);
+                  });
+                },
+              ),
+              TextButton(
+                child: Text('OK'),
+                onPressed: () async {
+                    await fileManage.deleteFile(File(filePath));
+                  setState(() {
+                    fileSystem.removeAt(currentIndex);
+                    Navigator.pop(context);
+                  });
+                },
+              ),
+
+            ],
+          );
+        });
+  }
+
+  void _showPopupMenu(Offset offset, int index, String path) async {
+    double left = offset.dx;
+    double top = offset.dy;
+    await showMenu(
+      context: context,
+      position: RelativeRect.fromLTRB(left, top, 0, 0),
+        items: [
+          PopupMenuItem(
+             value: 1,
+            child: Text("Rename"),
+            onTap: () {
+              setState(()
+              {
+                filePath = path;
+                currentIndex = index;
+              });
+              Future<void>.delayed(
+                const Duration(),  // OR const Duration(milliseconds: 500),
+                () => _renameDialog(context),
+              );
+            },
+          ),
+          PopupMenuItem(
+             value: 1,
+            child: Text("Export"),
+            onTap: () async {
+              setState(()
+              {
+                currentIndex = index;
+              });
+            },
+          ),
+          PopupMenuItem(
+            value: 2,
+            child: Text("Delete"),
+            onTap: () {
+              setState(()
+              {
+                filePath = path;
+                currentIndex = index;
+              });
+              Future<void>.delayed(
+                const Duration(),  // OR const Duration(milliseconds: 500),
+                () => _deleteDialog(context),
+              );
+            },
+          ),
+        ],
+        elevation: 8.0,
+      ).then((value){
+
+      if(value!=null)
+       print(value);
+
+       });
+    }
 
   Future<void> _displayTextInputDialog(BuildContext context) async {
     return showDialog(
@@ -102,7 +247,7 @@ class _fileListViewState extends State<fileListView> {
             Row(
               children: <Widget>[
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(10.0),
             child: 
               Align(
                 alignment: Alignment.centerLeft,
@@ -135,15 +280,53 @@ class _fileListViewState extends State<fileListView> {
                 builder: (context, AsyncSnapshot<List<FileSystemEntity>> snapshot) {
                 if (!snapshot.hasData || snapshot.data!.isEmpty) {
                   return Center(
-                    child: 
-                      Text('You don\'t have any files.',
-                      style: TextStyle(fontSize: 20),),
+                    child:
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.error,
+                            size: 100,
+                          ),
+                          Text.rich(
+                            TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: "You don\'t have any files.\n Start create score record\n by pressing ",
+                                ),
+                                WidgetSpan(
+                                  child: Icon(Icons.camera_alt, size: 20),
+                                ),
+                                TextSpan(
+                                  text: " Camera",       
+                                ),
+                              ],
+                            ),
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontSize: 20),
+                          )
+                        ],
+                      )
                   );
                 }
                 print('${snapshot.data!.length} ${snapshot.data}');
                 if (snapshot.data!.length == 0) {
                   return Center(
-                    child: Text('No CSV File found from Local Storage.'),
+                    child:
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.error,
+                            size: 100,
+                          ),
+                          Text('No CSV File found from Local Storage.',
+                            style: TextStyle(fontSize: 20),
+                      ),
+                        ],
+                      )
                   );
                 }
                 fileSystem = snapshot.data!;
@@ -151,7 +334,18 @@ class _fileListViewState extends State<fileListView> {
                   itemCount: fileSystem.length,
                   itemBuilder: (context, index) {
                     return fileSystem[index].path.split('/').last.contains(searchString)
-                    ? Card(
+                    ? GestureDetector(
+                        onTapDown: (TapDownDetails details) {
+                          setState(() {
+                            fileName = (fileSystem[index].path.split('/').last).split('.').first;
+                            detail = details.globalPosition;
+                          });
+                        },
+                        onLongPress: () {
+                          HapticFeedback.mediumImpact();
+                          _showPopupMenu(detail, index, fileSystem[index].path);
+                        },
+                      child: Card(
                         child: ListTile(
                         onTap: () async {
                           List<List<dynamic>> dataList = await fileManage.displayCSVData(fileSystem[index].path);
@@ -165,10 +359,15 @@ class _fileListViewState extends State<fileListView> {
                             ),
                           );
                         },
+                        leading: Icon(Icons.file_copy),
                         title: Text(
-                          fileSystem[index].path.split('/').last,
+                          (fileSystem[index].path.split('/').last).split('.').first,
                           style: TextStyle(fontWeight: FontWeight.bold),
-                        )
+                        ),
+                        subtitle: Text(
+                          "lastModified: " + fileSystem[index].statSync().modified.toString()
+                          )
+                        ),
                       ),
                     )
                     : Container();

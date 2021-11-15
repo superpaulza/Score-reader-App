@@ -16,6 +16,7 @@ class _settingsPageState extends State<settingsPage> {
   bool _isDebug = false;
   bool _isGayray = false;
   bool _themeDark = true;
+  bool _isEnableGayRay = true;
   SharedPreferences? preferences;
 
   @override
@@ -33,6 +34,7 @@ class _settingsPageState extends State<settingsPage> {
       _isDebug = (preferences!.getBool('isDebug') ?? false);
       _isGayray = (preferences!.getBool('isGayray') ?? false);
       _themeDark = (preferences!.getBool('isthemeDark') ?? true);
+      _isEnableGayRay = (preferences!.getBool('isEGayRay') ?? false);
     });
   }
 
@@ -77,6 +79,7 @@ class _settingsPageState extends State<settingsPage> {
                 },
                 secondary: const Icon(Icons.crop),
               ),
+              _isEnableGayRay ?
               SwitchListTile(
                 title: const Text('Enable Developer Mode'),
                 value: _isDebug,
@@ -87,7 +90,9 @@ class _settingsPageState extends State<settingsPage> {
                   });
                 },
                 secondary: const Icon(Icons.bug_report),
-              ),
+              )
+              : Container(),
+              _isEnableGayRay ?
               SwitchListTile(
                 title: const Text('Enable เ ก เ ร Mode'),
                 value: _isGayray,
@@ -98,7 +103,8 @@ class _settingsPageState extends State<settingsPage> {
                   });
                 },
                 secondary: const Icon(Icons.sports_handball_sharp),
-              ),
+              )
+              : Container(),
             SwitchListTile(
               title: const Text('Theme Dark'),
               value: _themeDark,

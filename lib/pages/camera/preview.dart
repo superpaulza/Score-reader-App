@@ -134,6 +134,12 @@ class _PreviewScreenState extends State<PreviewScreen> {
   @override
   void initState() {
     super.initState();
+
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+
     brain.loadModel();
     setState(() {
       newFile = widget.fileData;
@@ -146,6 +152,12 @@ class _PreviewScreenState extends State<PreviewScreen> {
   @override
   void dispose() {
     brain.close();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeRight,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
     super.dispose();
   }
 
@@ -245,7 +257,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
             ),
             _isReturn 
             ? Text(
-            scoreData == '' ? "Error: Can\'t detected!" : "$scoreData",
+            scoreData == '' ? "Can\'t detected!" : "$scoreData",
             textAlign: TextAlign.left,
             overflow: TextOverflow.clip,
             style: TextStyle(
@@ -365,6 +377,43 @@ class _PreviewScreenState extends State<PreviewScreen> {
   //       ),
   //     ],
   //   );
+  // }
+
+  //   List<Widget> renderBoxes(Size screen) {
+  //   if (aiReturn == null) return [];
+  //   if (Image.file(widget.imageData).width == null || Image.file(widget.imageData).height == null) return [];
+
+  //   double factorX = screen.width;
+  //   double factorY = _imageHeight / _imageHeight * screen.width;
+
+  //   Color blue = Colors.blue;
+
+  //   return _recognitions.map((re) {
+  //     return Container(
+  //       child: Positioned(
+  //         left: re["rect"]["x"] * factorX,
+  //         top: re["rect"]["y"] * factorY,
+  //         width: re["rect"]["w"] * factorX,
+  //         height: re["rect"]["h"] * factorY,
+  //         child: ((re["confidenceInClass"] > 0.50))? Container(
+  //             decoration: BoxDecoration(
+  //               border: Border.all(
+  //               color: blue,
+  //               width: 3,
+  //             )
+  //           ),
+  //           child: Text(
+  //             "${re["detectedClass"]} ${(re["confidenceInClass"] * 100).toStringAsFixed(0)}%",
+  //             style: TextStyle(
+  //               background: Paint()..color = blue,
+  //               color: Colors.white,
+  //               fontSize: 15,
+  //             ),
+  //           ),
+  //         ) : Container()
+  //       ),
+  //     );
+  //   }).toList();
   // }
 
   @override

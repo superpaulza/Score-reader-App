@@ -45,11 +45,13 @@ class _TakePictureScreenState extends State<TakePictureScreen>
   bool singleTap = true;
   double scale = 0;
   bool _initializing = false;
+  bool _isGayray = false;
 
   Future<void> initializePreference() async {
     this.preferences = await SharedPreferences.getInstance();
     setState(() {
       _isCrop = (preferences!.getBool('isCrop') ?? false);
+      _isGayray = (preferences!.getBool('isGayray') ?? false);
     });
   }
 
@@ -100,19 +102,16 @@ class _TakePictureScreenState extends State<TakePictureScreen>
   @override
   void initState() {
     super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
     _initializing = true;
      initializePreference().whenComplete(() {
        setState(() {});
      });
     WidgetsBinding.instance!.addObserver(this);
-
     initializeCamera(cameras[0]);
-
-
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ]);
   }
 
   @override
@@ -168,6 +167,11 @@ class _TakePictureScreenState extends State<TakePictureScreen>
   // }
 
   Widget cameraPreview(context) {
+    if(isCameraReady) {
+      setState(() {
+        _controller?.lockCaptureOrientation(DeviceOrientation.portraitUp);
+      });
+    }
     return isCameraReady
           ? Transform.scale(
               scale: (MediaQuery.of(context).size.aspectRatio * _controller!.value.aspectRatio) < 1 
@@ -232,7 +236,6 @@ class _TakePictureScreenState extends State<TakePictureScreen>
   }
 
   Future<XFile?> takePicture() async {
-    await initializePreference();
     final CameraController? cameraController = _controller;
     if (cameraController!.value.isTakingPicture) {
       // A capture is already pending, do nothing.
@@ -269,13 +272,15 @@ class _TakePictureScreenState extends State<TakePictureScreen>
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Container(
+              _isGayray
+              ? Container(
                 child:  Image(
                 image: AssetImage("assets/img/loading.gif"),
                 width: 200,
                 height: 200,
-              ),
-              ),
+                )
+              )
+              : Container(),
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -305,6 +310,9 @@ class _TakePictureScreenState extends State<TakePictureScreen>
                 padding: const EdgeInsets.only(bottom: 24),
                 child: InkWell(
                   onTap: () {
+                    setState(() {
+                      initializePreference();
+                    });
                     _onLoading();
                     if (singleTap) {
                       // Do something here
@@ -362,6 +370,7 @@ class _TakePictureScreenState extends State<TakePictureScreen>
                   size: 50,
                   ),
                 onPressed: () async {
+                  HapticFeedback.mediumImpact();
                   List<List<dynamic>> dataList = await fileManage.displayCSVData(widget.file.path);
                   Navigator.of(context).push(
                   MaterialPageRoute(

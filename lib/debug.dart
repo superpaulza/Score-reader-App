@@ -95,6 +95,5 @@ deletallCSVFile() async {
     } catch (e) {
       return 0;
     }
-  fileManage.makeCSV("Untitled");
   log("File deleted!");
 }

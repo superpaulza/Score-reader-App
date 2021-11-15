@@ -11,6 +11,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:score_scanner/debug.dart';
 import 'package:score_scanner/modules/utility.dart';
+import 'package:score_scanner/pages/about.dart';
 import 'package:score_scanner/pages/csv/editablecsv.dart';
 
 
@@ -82,6 +83,7 @@ class MainWidget extends StatelessWidget {
             '/file': (BuildContext context) => new fileManager(),
             '/settings': (BuildContext context) => new settingsPage(),
             '/debug': (BuildContext context) => new deBugScreen(),
+            '/about' : (BuildContext context) => new aboutPage()
           });
     });
   }

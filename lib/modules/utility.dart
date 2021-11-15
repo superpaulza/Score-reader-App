@@ -11,6 +11,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:flutter/rendering.dart';
 import 'package:image/image.dart' as IMG;
 import 'dart:typed_data';
+import 'package:path/path.dart' as path;
 
 class imageas {
   static Future<File> getImageFileFromAssets(String path) async {
@@ -37,7 +38,7 @@ class fileManage {
   static Future<File> makeCSVasTemp(String name) async {
     List<List<dynamic>> data = [];
     String csvData = ListToCsvConverter().convert(data);
-    String directory = (await getApplicationSupportDirectory()).path;
+    String directory = (await getTemporaryDirectory()).path;
     String filePath = '$directory/$name.csv';
     File tempfile = File(filePath);
     await tempfile.writeAsString(csvData);
@@ -50,6 +51,31 @@ class fileManage {
       .transform(utf8.decoder)
       .transform(CsvToListConverter())
       .toList();
+  }
+
+  static Future<File> renameFile(File _localFile, String name) async {
+    File file = _localFile;
+    try {
+      print('Original path: ${_localFile.path}');
+      String dir = path.dirname(_localFile.path);
+      String newPath = path.join(dir, '${name}.csv');
+      print('NewPath: ${newPath}');
+      await _localFile.renameSync(newPath);
+      file = File(newPath);
+    } catch (e) {
+      print(e);
+    }
+    return file;
+  }
+
+  static Future<void> deleteFile(File _localFile) async {
+    try {
+      final file = await _localFile;
+
+      await file.delete();
+    } catch (e) {
+      print(e);
+    }
   }
 
   static Future<void> writeListDatatoFile (List<List<dynamic>> yourListOfLists, String filePath) async {
