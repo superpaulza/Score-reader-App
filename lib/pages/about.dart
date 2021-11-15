@@ -117,7 +117,7 @@ class _aboutPageState extends State<aboutPage> {
                   ),
                   WidgetSpan(
                     child: Image.asset(
-                      'assets/img/icon.png',
+                      'assets/img/Paul.png',
                       width: 100,
                       height: 100,
                     ),
@@ -127,7 +127,7 @@ class _aboutPageState extends State<aboutPage> {
                   ),
                   WidgetSpan(
                     child: Image.asset(
-                      'assets/img/icon.png',
+                      'assets/img/Porn.png',
                       width: 100,
                       height: 100,
                     ),
@@ -137,7 +137,7 @@ class _aboutPageState extends State<aboutPage> {
                   ),
                   WidgetSpan(
                     child: Image.asset(
-                      'assets/img/icon.png',
+                      'assets/img/loading.gif',
                       width: 100,
                       height: 100,
                     ),
@@ -147,7 +147,7 @@ class _aboutPageState extends State<aboutPage> {
                   ),
                   WidgetSpan(
                     child: Image.asset(
-                      'assets/img/icon.png',
+                      'assets/img/Boss.png',
                       width: 100,
                       height: 100,
                     ),
@@ -157,7 +157,7 @@ class _aboutPageState extends State<aboutPage> {
                   ),
                   WidgetSpan(
                     child: Image.asset(
-                      'assets/img/icon.png',
+                      'assets/img/Fam.png',
                       width: 100,
                       height: 100,
                     ),
@@ -167,7 +167,7 @@ class _aboutPageState extends State<aboutPage> {
                   ),
                   WidgetSpan(
                     child: Image.asset(
-                      'assets/img/icon.png',
+                      'assets/img/Ter.png',
                       width: 100,
                       height: 100,
                     ),

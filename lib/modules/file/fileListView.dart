@@ -143,6 +143,7 @@ class _fileListViewState extends State<fileListView> {
              value: 1,
             child: Text("Export"),
             onTap: () async {
+              await Share.shareFiles([path]);
               setState(()
               {
                 currentIndex = index;

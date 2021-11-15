@@ -85,6 +85,11 @@ flutter:
     - assets/models/model.tflite
     - assets/img/No_AI_bullet_curve.png
     - assets/img/loading.gif
+    - assets/img/Paul.png
+    - assets/img/Boss.png
+    - assets/img/Fam.png
+    - assets/img/Porn.png
+    - assets/img/Ter.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
